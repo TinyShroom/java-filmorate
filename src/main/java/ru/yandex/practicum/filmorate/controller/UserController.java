@@ -5,8 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.utils.Validator;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,12 +25,18 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<Void> addUser(@Valid @RequestBody User user) {
+        if (Validator.userValidator(user)) {
+            throw new ValidationException();
+        }
         users.put(user.getId(), user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/user")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody User user) {
+        if (Validator.userValidator(user)) {
+            throw new ValidationException();
+        }
         var oldUser = users.get(user.getId());
         if (oldUser == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
