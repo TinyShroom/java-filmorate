@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class UserController {
 
@@ -25,8 +27,9 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<Void> addUser(@Valid @RequestBody User user) {
+        log.info("POST /user: {}", user.toString());
         if (Validator.userValidator(user)) {
-            throw new ValidationException();
+            throw new ValidationException("POST /user: invalid birthdate " + user.getBirthday());
         }
         users.put(user.getId(), user);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -34,8 +37,9 @@ public class UserController {
 
     @PutMapping("/user")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody User user) {
+        log.info("PUT /user: {}", user.toString());
         if (Validator.userValidator(user)) {
-            throw new ValidationException();
+            throw new ValidationException("PUT /user: invalid birthdate " + user.getBirthday());
         }
         var oldUser = users.get(user.getId());
         if (oldUser == null) {
