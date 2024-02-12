@@ -9,14 +9,16 @@ public class Validator {
 
     private static final LocalDate CINEMA_BIRTHDAY = LocalDate.of(1895, 12, 28);
 
-    public static boolean filmValidator(Film film) {
-        return CINEMA_BIRTHDAY.isAfter(film.getReleaseDate());
+    public static boolean isFilmValid(Film film) {
+        if (film.getReleaseDate() == null) return true;
+        return !CINEMA_BIRTHDAY.isAfter(film.getReleaseDate());
     }
 
-    public static boolean userValidator(User user) {
+    public static boolean isUserValid(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        return LocalDate.now().isBefore(user.getBirthday());
+        if (user.getBirthday() == null) return true;
+        return !LocalDate.now().isBefore(user.getBirthday());
     }
 }

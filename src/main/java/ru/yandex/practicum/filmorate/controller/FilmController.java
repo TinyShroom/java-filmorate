@@ -28,7 +28,7 @@ public class FilmController {
     @PostMapping("/film")
     public ResponseEntity<Void> addFilm(@Valid @RequestBody Film film) {
         log.info("POST /film: {}", film.toString());
-        if (Validator.filmValidator(film)) {
+        if (!Validator.isFilmValid(film)) {
             throw new ValidationException("POST /film: invalid release date " + film.getReleaseDate());
         }
         films.put(film.getId(), film);
@@ -38,7 +38,7 @@ public class FilmController {
     @PutMapping("/film")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody Film film) {
         log.info("PUT /film: {}", film.toString());
-        if (Validator.filmValidator(film)) {
+        if (!Validator.isFilmValid(film)) {
             throw new ValidationException("PUT /film: invalid release date " + film.getReleaseDate());
         }
         var oldFilm = films.get(film.getId());
