@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.DefaultObjects;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.Validator;
 
@@ -28,7 +29,7 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<Void> addUser(@Valid @RequestBody User user) {
         log.info("POST /user: {}", user.toString());
-        if (Validator.userValidator(user)) {
+        if (!Validator.isUserValid(user)) {
             throw new ValidationException("POST /user: invalid birthdate " + user.getBirthday());
         }
         users.put(user.getId(), user);
@@ -38,7 +39,7 @@ public class UserController {
     @PutMapping("/user")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody User user) {
         log.info("PUT /user: {}", user.toString());
-        if (Validator.userValidator(user)) {
+        if (!Validator.isUserValid(user)) {
             throw new ValidationException("PUT /user: invalid birthdate " + user.getBirthday());
         }
         var oldUser = users.get(user.getId());
