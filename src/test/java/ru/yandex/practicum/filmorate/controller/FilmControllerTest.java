@@ -28,7 +28,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -37,7 +37,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -50,7 +50,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -62,7 +62,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -74,7 +74,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -122,7 +122,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -131,7 +131,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -151,7 +151,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -169,7 +169,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -187,7 +187,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +196,7 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test

@@ -15,16 +15,15 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public String exceptionHandler(
-            MethodArgumentNotValidException e) {
+    public ErrorMessage exceptionHandler(MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
-        return "Validation exception";
+        return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), "Validation exception");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
-    public String exceptionHandler(ValidationException e) {
+    public ErrorMessage exceptionHandler(ValidationException e) {
         log.warn(e.getMessage());
-        return "Validation exception";
+        return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), "Validation exception");
     }
 }

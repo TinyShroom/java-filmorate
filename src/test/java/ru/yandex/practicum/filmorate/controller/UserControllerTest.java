@@ -54,7 +54,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -63,7 +63,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -81,7 +81,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -94,7 +94,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -103,7 +103,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -125,7 +125,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -173,7 +173,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +182,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -191,7 +191,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -200,7 +200,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -219,7 +219,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -228,7 +228,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -237,7 +237,7 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -256,6 +256,6 @@ class UserControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 }
