@@ -25,21 +25,21 @@ public class UserController {
         users = new HashMap<>();
     }
 
-    @PostMapping("/user")
+    @PostMapping("/users")
     public ResponseEntity<Void> addUser(@Valid @RequestBody User user) {
-        log.info("POST /user: {}", user.toString());
+        log.info("POST /users: {}", user.toString());
         if (!Validator.isUserValid(user)) {
-            throw new ValidationException("POST /user: invalid birthdate " + user.getBirthday());
+            throw new ValidationException("POST /users: invalid birthdate " + user.getBirthday());
         }
         users.put(user.getId(), user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/user")
+    @PutMapping("/users")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody User user) {
-        log.info("PUT /user: {}", user.toString());
+        log.info("PUT /users: {}", user.toString());
         if (!Validator.isUserValid(user)) {
-            throw new ValidationException("PUT /user: invalid birthdate " + user.getBirthday());
+            throw new ValidationException("PUT /users: invalid birthdate " + user.getBirthday());
         }
         var oldUser = users.get(user.getId());
         if (oldUser == null) {
@@ -49,7 +49,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(users.values()));
     }

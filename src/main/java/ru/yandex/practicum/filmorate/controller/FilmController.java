@@ -25,21 +25,21 @@ public class FilmController {
         films = new HashMap<>();
     }
 
-    @PostMapping("/film")
+    @PostMapping("/films")
     public ResponseEntity<Void> addFilm(@Valid @RequestBody Film film) {
-        log.info("POST /film: {}", film.toString());
+        log.info("POST /films: {}", film.toString());
         if (!Validator.isFilmValid(film)) {
-            throw new ValidationException("POST /film: invalid release date " + film.getReleaseDate());
+            throw new ValidationException("POST /films: invalid release date " + film.getReleaseDate());
         }
         films.put(film.getId(), film);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/film")
+    @PutMapping("/films")
     public ResponseEntity<Void> changeFilm(@Valid @RequestBody Film film) {
-        log.info("PUT /film: {}", film.toString());
+        log.info("PUT /films: {}", film.toString());
         if (!Validator.isFilmValid(film)) {
-            throw new ValidationException("PUT /film: invalid release date " + film.getReleaseDate());
+            throw new ValidationException("PUT /films: invalid release date " + film.getReleaseDate());
         }
         var oldFilm = films.get(film.getId());
         if (oldFilm == null) {
@@ -49,7 +49,7 @@ public class FilmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/film")
+    @GetMapping("/films")
     public ResponseEntity<List<Film>> getFilms() {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(films.values()));
     }

@@ -21,7 +21,7 @@ class FilmControllerTest {
     @Test
     void postValidationFailName() throws Exception {
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": null,\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -30,7 +30,7 @@ class FilmControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", is("Validation exception")));
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 1,\"name\": \"\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -43,7 +43,7 @@ class FilmControllerTest {
     @Test
     void postValidationFailDescription() throws Exception {
         var longDescription = "d".repeat(201);
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"" + longDescription + "\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -55,7 +55,7 @@ class FilmControllerTest {
 
     @Test
     void postValidationFailReleaseDate() throws Exception {
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-27\",\"duration\": 1}");
@@ -67,7 +67,7 @@ class FilmControllerTest {
 
     @Test
     void postValidationFailDuration() throws Exception {
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": 0}");
@@ -76,7 +76,7 @@ class FilmControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", is("Validation exception")));
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 1,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": -1}");
@@ -90,7 +90,7 @@ class FilmControllerTest {
     void postOk() throws Exception {
         var longDescription = "d".repeat(200);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"" + longDescription + "\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": 1}");
@@ -98,7 +98,7 @@ class FilmControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk());
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"F\",\"duration\": 1}");
 
@@ -109,13 +109,13 @@ class FilmControllerTest {
     @Test
     void putValidationFailName() throws Exception {
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"duration\": 1}");
 
         mockMvc.perform(mockRequest);
 
-        mockRequest = MockMvcRequestBuilders.put("/film")
+        mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": null,\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -124,7 +124,7 @@ class FilmControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", is("Validation exception")));
 
-        mockRequest = MockMvcRequestBuilders.put("/film")
+        mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -137,14 +137,14 @@ class FilmControllerTest {
     @Test
     void putValidationFailDescription() throws Exception {
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"duration\": 1}");
 
         mockMvc.perform(mockRequest);
 
         var longDescription = "d".repeat(201);
-        mockRequest = MockMvcRequestBuilders.put("/film")
+        mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"" + longDescription + "\"," +
                         "\"releaseDate\": \"1895-12-29\",\"duration\": 1}");
@@ -156,13 +156,13 @@ class FilmControllerTest {
 
     @Test
     void putValidationFailReleaseDate() throws Exception {
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"duration\": 1}");
 
         mockMvc.perform(mockRequest);
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-27\",\"duration\": 1}");
@@ -174,13 +174,13 @@ class FilmControllerTest {
 
     @Test
     void putValidationFailDuration() throws Exception {
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"duration\": 1}");
 
         mockMvc.perform(mockRequest);
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": 0}");
@@ -189,7 +189,7 @@ class FilmControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", is("Validation exception")));
 
-        mockRequest = MockMvcRequestBuilders.post("/film")
+        mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": -1}");
@@ -202,13 +202,13 @@ class FilmControllerTest {
     @Test
     void putOk() throws Exception {
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/film")
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"F\",\"duration\": 1}");
 
         mockMvc.perform(mockRequest);
 
-        mockRequest = MockMvcRequestBuilders.put("/film")
+        mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"Film name\",\"description\": \"Film description\"," +
                         "\"releaseDate\": \"1895-12-28\",\"duration\": 1}");
@@ -216,7 +216,7 @@ class FilmControllerTest {
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk());
 
-        mockRequest = MockMvcRequestBuilders.put("/film")
+        mockRequest = MockMvcRequestBuilders.put("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"id\": 0,\"name\": \"n\",\"duration\": 1}");
 
