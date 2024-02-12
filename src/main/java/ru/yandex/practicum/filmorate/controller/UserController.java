@@ -10,29 +10,30 @@ import ru.yandex.practicum.filmorate.utils.Validator;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
 public class UserController {
 
     private final Map<Long, User> users;
+    private long idCounter = 1;
 
     public UserController() {
         users = new HashMap<>();
     }
 
     @PostMapping("/users")
-    public ResponseEntity<Void> addUser(@Valid @RequestBody User user) {
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         log.info("POST /users: {}", user.toString());
         if (!Validator.isUserValid(user)) {
             throw new ValidationException("POST /users: invalid birthdate " + user.getBirthday());
         }
+        if (user.getId() < 1) {
+            user.setId(idGenerator(users.keySet()));
+        }
         users.put(user.getId(), user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(user,HttpStatus.OK);
     }
 
     @PutMapping("/users")
@@ -52,5 +53,12 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(users.values()));
+    }
+
+    private long idGenerator(Set<Long> idSet) {
+        while (idSet.contains(idCounter)) {
+            ++idCounter;
+        }
+        return idCounter;
     }
 }

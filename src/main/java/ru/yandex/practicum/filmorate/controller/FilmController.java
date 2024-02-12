@@ -10,29 +10,30 @@ import ru.yandex.practicum.filmorate.utils.Validator;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RestController
 public class FilmController {
 
     private final Map<Long, Film> films;
+    private long idCounter = 1;
 
     public FilmController() {
         films = new HashMap<>();
     }
 
     @PostMapping("/films")
-    public ResponseEntity<Void> addFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
         log.info("POST /films: {}", film.toString());
         if (!Validator.isFilmValid(film)) {
             throw new ValidationException("POST /films: invalid release date " + film.getReleaseDate());
         }
+        if (film.getId() < 1) {
+            film.setId(idGenerator(films.keySet()));
+        }
         films.put(film.getId(), film);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
     @PutMapping("/films")
@@ -54,4 +55,10 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(films.values()));
     }
 
+    private long idGenerator(Set<Long> idSet) {
+        while (idSet.contains(idCounter)) {
+            ++idCounter;
+        }
+        return idCounter;
+    }
 }
