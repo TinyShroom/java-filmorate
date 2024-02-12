@@ -24,7 +24,7 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk());
@@ -36,7 +36,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now() + "\"}");
 
         mockMvc.perform(mockRequest)
@@ -49,7 +49,7 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": null,\"login\": \"User_login\"," +
+                .content("{\"email\": null,\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -58,7 +58,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 1,\"email\": \"\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -67,7 +67,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"usermail.com\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"usermail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -76,7 +76,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"usermail.com@\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"usermail.com@\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -89,7 +89,7 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": null," +
+                .content("{\"email\": \"user@mail.com\",\"login\": null," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -98,7 +98,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"\"," +
+                .content("{\"email\": \"user@mail.com\",\"login\": \"\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -107,7 +107,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User login\"," +
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -120,7 +120,7 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now().plusDays(1) + "\"}");
 
         mockMvc.perform(mockRequest)
@@ -134,14 +134,14 @@ class UserControllerTest {
         var date = LocalDate.now().toString();
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\"}");
 
         mockMvc.perform(mockRequest);
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"new@mail.com\",\"login\": \"NewLogin\"," +
+                .content("{\"id\": 1,\"email\": \"new@mail.com\",\"login\": \"NewLogin\"," +
                         "\"birthday\": \"" + date + "\"}");
 
         mockMvc.perform(mockRequest)
@@ -162,13 +162,13 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
 
         mockMvc.perform(mockRequest);
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": null,\"login\": \"User_login\"," +
+                .content("{\"id\": 1,\"email\": null,\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -177,7 +177,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"\",\"login\": \"User_login\"," +
+                .content("{\"id\": 1,\"email\": \"\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -186,7 +186,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"usermail.com\",\"login\": \"User_login\"," +
+                .content("{\"id\": 1,\"email\": \"usermail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -195,7 +195,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"usermail.com@\",\"login\": \"User_login\"," +
+                .content("{\"id\": 1,\"email\": \"usermail.com@\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -208,13 +208,13 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
 
         mockMvc.perform(mockRequest);
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": null," +
+                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": null," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -223,7 +223,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"\"," +
+                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -232,7 +232,7 @@ class UserControllerTest {
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User login\"," +
+                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User login\"," +
                         "\"name\": \"User name\",\"birthday\": \"2005-05-15\"}");
 
         mockMvc.perform(mockRequest)
@@ -245,13 +245,13 @@ class UserControllerTest {
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
+                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
 
         mockMvc.perform(mockRequest);
 
         mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 0,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
                         "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now().plusDays(1) + "\"}");
 
         mockMvc.perform(mockRequest)
