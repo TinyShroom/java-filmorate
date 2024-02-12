@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ErrorMessage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.utils.Validator;
 
@@ -37,17 +38,18 @@ public class FilmController {
     }
 
     @PutMapping("/films")
-    public ResponseEntity<Void> changeFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<Object> changeFilm(@Valid @RequestBody Film film) {
         log.info("PUT /films: {}", film.toString());
         if (!Validator.isFilmValid(film)) {
             throw new ValidationException("PUT /films: invalid release date " + film.getReleaseDate());
         }
         var oldFilm = films.get(film.getId());
         if (oldFilm == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND.value(), "Film not found"),
+                    HttpStatus.NOT_FOUND);
         }
         BeanUtils.copyProperties(film, oldFilm, "id");
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(oldFilm, HttpStatus.OK);
     }
 
     @GetMapping("/films")

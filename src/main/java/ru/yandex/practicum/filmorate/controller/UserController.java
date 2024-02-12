@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ErrorMessage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.Validator;
 
@@ -37,17 +38,18 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<Void> changeFilm(@Valid @RequestBody User user) {
+    public ResponseEntity<Object> changeFilm(@Valid @RequestBody User user) {
         log.info("PUT /users: {}", user.toString());
         if (!Validator.isUserValid(user)) {
             throw new ValidationException("PUT /users: invalid birthdate " + user.getBirthday());
         }
         var oldUser = users.get(user.getId());
         if (oldUser == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMessage(HttpStatus.NOT_FOUND.value(), "User not found"),
+                    HttpStatus.NOT_FOUND);
         }
         BeanUtils.copyProperties(user, oldUser, "id");
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(oldUser, HttpStatus.OK);
     }
 
     @GetMapping("/users")
