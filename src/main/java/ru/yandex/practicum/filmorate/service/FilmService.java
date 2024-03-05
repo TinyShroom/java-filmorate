@@ -23,7 +23,7 @@ public class FilmService {
 
     public Film addFilm(Film film) {
         if (!Validator.isFilmValid(film)) {
-            throw new ValidationException("POST /films: invalid release date " + film.getReleaseDate());
+            throw new ValidationException("POST /films: release date must be after 1895-12-28");
         }
         if (film.getId() < 1) {
             film.setId(idGenerator());
@@ -33,7 +33,7 @@ public class FilmService {
 
     public Film changeFilm(Film film) {
         if (!Validator.isFilmValid(film)) {
-            throw new ValidationException("PUT /films: invalid release date " + film.getReleaseDate());
+            throw new ValidationException("PUT /films: release date must be after 1895-12-28");
         }
         var oldFilm = filmStorage.findById(film.getId());
         if (oldFilm == null) {

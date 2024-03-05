@@ -22,9 +22,7 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         log.info("POST /users: {}", user.toString());
-        var addedUser = userService.addUser(user);
-        System.out.println(addedUser);
-        return ResponseEntity.status(HttpStatus.OK).body(addedUser);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.addUser(user));
     }
 
     @PutMapping("/users")

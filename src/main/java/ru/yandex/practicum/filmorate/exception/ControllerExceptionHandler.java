@@ -15,10 +15,17 @@ import java.util.Map;
 public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class})
-    public ErrorMessage exceptionHandler(ValidationException e) {
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(ValidationException e) {
         log.warn(e.getMessage());
-        return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), "Validation exception");
+        return Map.of("message", e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(MethodArgumentNotValidException e) {
+        log.warn(e.getMessage());
+        return Map.of("message", "Validation exception");
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

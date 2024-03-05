@@ -22,7 +22,7 @@ public class UserService {
     }
     public User addUser(User user) {
         if (!Validator.isUserValid(user)) {
-            throw new ValidationException("POST /users: invalid birthdate " + user.getBirthday());
+            throw new ValidationException("POST /users: birthdate must not be in the future");
         }
         user.setId(idGenerator());
         return userStorage.save(user);
@@ -30,7 +30,7 @@ public class UserService {
 
     public User changeUser(User user) {
         if (!Validator.isUserValid(user)) {
-            throw new ValidationException("PUT /users: invalid birthdate " + user.getBirthday());
+            throw new ValidationException("PUT /users: birthdate must not be in the future");
         }
         var oldUser = userStorage.findById(user.getId());
         if (oldUser == null) {

@@ -1,16 +1,24 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,29 +27,48 @@ class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private UserService userService;
+
+    private static ObjectMapper mapper;
+
+    @BeforeAll
+    public static void setUp() {
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+    }
+
     @Test
     void postOk() throws Exception {
+        var content = "{\"email\": \"user@mail.com\",\"login\": \"User_login\"}";
+        var answer = "{\"email\": \"user@mail.com\",\"login\": \"User_login\",\"name\": \"User_login\"}";
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
-
-        mockRequest = MockMvcRequestBuilders.get("/users");
+        when(userService.addUser(mapper.readValue(content, User.class)))
+                .thenReturn(mapper.readValue(answer, User.class));
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is("User_login")));
+                .andExpect(jsonPath("$.name", is("User_login")));
+
+        var date = LocalDate.now();
+
+        content = "{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                "\"name\": \"User name\",\"birthday\": \"" + date + "\"}";
+        answer = "{\"id\": 2,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                "\"name\": \"User name\",\"birthday\": \"" + date + "\"}";
 
         mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
-                        "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now() + "\"}");
+                .content(content);
+
+        when(userService.addUser(mapper.readValue(content, User.class)))
+                .thenReturn(mapper.readValue(answer, User.class));
 
         mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
-
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(2)));
     }
 
     @Test
@@ -117,44 +144,41 @@ class UserControllerTest {
 
     @Test
     void postValidationFailBirthday() throws Exception {
+        var date = LocalDate.now().plusDays(1);
+        var content = "{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                "\"name\": \"User name\",\"birthday\": \"" + date + "\"}";
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
-                        "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now().plusDays(1) + "\"}");
+                .content(content);
+
+        when(userService.addUser(mapper.readValue(content, User.class)))
+                .thenThrow(new ValidationException("POST /users: birthdate must not be in the future"));
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("POST /users: birthdate must not be in the future")));
     }
 
     @Test
     void putOk() throws Exception {
 
         var date = LocalDate.now().toString();
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
+        var content = "{\"id\": 1,\"email\": \"new@mail.com\",\"login\": \"NewLogin\"," +
+                "\"birthday\": \"" + date + "\"}";
+        var answer = "{\"id\": 1,\"email\": \"new@mail.com\",\"login\": \"NewLogin\"," +
+                "\"name\": \"NewLogin\",\"birthday\": \"" + date + "\"}";
+        var mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
-                        "\"name\": \"User name\"}");
-
-        mockMvc.perform(mockRequest);
-
-        mockRequest = MockMvcRequestBuilders.put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 1,\"email\": \"new@mail.com\",\"login\": \"NewLogin\"," +
-                        "\"birthday\": \"" + date + "\"}");
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
-
-        mockRequest = MockMvcRequestBuilders.get("/users");
+                .content(content);
+        when(userService.changeUser(mapper.readValue(content, User.class)))
+                .thenReturn(mapper.readValue(answer, User.class));
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].email", is("new@mail.com")))
-                .andExpect(jsonPath("$[0].login", is("NewLogin")))
-                .andExpect(jsonPath("$[0].name", is("NewLogin")))
-                .andExpect(jsonPath("$[0].birthday", is(date)));
-
+                .andExpect(jsonPath("$.email", is("new@mail.com")))
+                .andExpect(jsonPath("$.login", is("NewLogin")))
+                .andExpect(jsonPath("$.name", is("NewLogin")))
+                .andExpect(jsonPath("$.birthday", is(date)));
     }
 
     @Test
@@ -242,20 +266,19 @@ class UserControllerTest {
 
     @Test
     void putValidationFailBirthday() throws Exception {
+        var date = LocalDate.now().plusDays(1);
+        var content = "{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
+                "\"name\": \"User name\",\"birthday\": \"" + date + "\"}";
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/users")
+        when(userService.changeUser(mapper.readValue(content, User.class)))
+                .thenThrow(new ValidationException("PUT /users: birthdate must not be in the future"));
+
+        var mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"email\": \"user@mail.com\",\"login\": \"User_login\"}");
-
-        mockMvc.perform(mockRequest);
-
-        mockRequest = MockMvcRequestBuilders.put("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
-                        "\"name\": \"User name\",\"birthday\": \"" + LocalDate.now().plusDays(1) + "\"}");
+                .content(content);
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("Validation exception")));
+                .andExpect(jsonPath("$.message", is("PUT /users: birthdate must not be in the future")));
     }
 }
