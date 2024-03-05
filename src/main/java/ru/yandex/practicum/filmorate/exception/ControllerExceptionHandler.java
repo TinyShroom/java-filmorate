@@ -8,22 +8,31 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ValidationException;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorMessage exceptionHandler(MethodArgumentNotValidException e) {
-        log.warn(e.getMessage());
-        return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), "Validation exception");
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ValidationException.class)
+    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class})
     public ErrorMessage exceptionHandler(ValidationException e) {
         log.warn(e.getMessage());
         return new ErrorMessage(HttpStatus.BAD_REQUEST.value(), "Validation exception");
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(NotFoundException e) {
+        log.warn(e.getMessage());
+        return Map.of("message", e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(RuntimeException e) {
+        log.warn(e.getMessage());
+        return Map.of("message", e.getMessage());
+    }
+
 }
