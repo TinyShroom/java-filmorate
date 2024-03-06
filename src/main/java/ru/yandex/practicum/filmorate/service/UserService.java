@@ -21,6 +21,7 @@ public class UserService {
         this.userStorage = userStorage;
         this.idCounter = 1;
     }
+
     public User addUser(User user) {
         if (!Validator.isUserValid(user)) {
             throw new ValidationException("POST /users: birthdate must not be in the future");
