@@ -38,4 +38,24 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(filmService.getFilms()));
     }
 
+    @PutMapping("/films/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void putLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("PUT /like: {}, {}", id, userId);
+        filmService.putLike(id, userId);
+    }
+
+    @DeleteMapping("/films/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("DELETE /like: {}, {}", id, userId);
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/films/popular")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("GET /popular: {}", count);
+        return filmService.getPopular(count);
+    }
 }
