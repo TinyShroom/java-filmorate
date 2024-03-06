@@ -80,7 +80,7 @@ class FilmControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
         when(filmService.addFilm(mapper.readValue(content, Film.class)))
-                .thenThrow( new ValidationException("POST /films: release date must be after 1895-12-28"));
+                .thenThrow(new ValidationException("POST /films: release date must be after 1895-12-28"));
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("POST /films: release date must be after 1895-12-28")));
@@ -197,7 +197,7 @@ class FilmControllerTest {
                 .content(content);
 
         when(filmService.addFilm(mapper.readValue(content, Film.class)))
-                .thenThrow( new ValidationException("PUT /films: release date must be after 1895-12-28"));
+                .thenThrow(new ValidationException("PUT /films: release date must be after 1895-12-28"));
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
