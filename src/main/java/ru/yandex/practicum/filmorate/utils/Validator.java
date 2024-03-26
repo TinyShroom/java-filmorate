@@ -18,7 +18,7 @@ public class Validator {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getBirthday() == null) return true;
-        return !LocalDate.now().isBefore(user.getBirthday());
+        if (user.getBirthdate() == null) return true;
+        return !LocalDate.now().isBefore(user.getBirthdate());
     }
 }

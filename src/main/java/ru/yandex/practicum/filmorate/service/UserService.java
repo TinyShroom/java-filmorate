@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.impl.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.utils.Validator;
 
 import javax.validation.ValidationException;
@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    private final UserStorage userStorage;
 
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    @Qualifier("userDbStorage")
+    private final UserStorage userStorage;
 
     public User addUser(User user) {
         if (!Validator.isUserValid(user)) {
@@ -29,10 +28,6 @@ public class UserService {
     public User changeUser(User user) {
         if (!Validator.isUserValid(user)) {
             throw new ValidationException("PUT /users: birthdate must not be in the future");
-        }
-        var oldUser = userStorage.findById(user.getId());
-        if (oldUser == null) {
-            throw new NotFoundException(String.format("PUT /users: user with id %d not found", user.getId()));
         }
         return userStorage.update(user);
     }

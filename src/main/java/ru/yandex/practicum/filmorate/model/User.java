@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class User {
 
     private long id;
@@ -23,7 +23,7 @@ public class User {
     @Pattern(regexp = "\\S+")
     private String login;
     private String name;
-    private LocalDate birthday;
+    private LocalDate birthdate;
     @Setter(AccessLevel.NONE)
     @JsonIgnore
     private final Set<Long> friends;
