@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +14,15 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @PostMapping("/films")
     public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
         log.info("POST /films: {}", film.toString());
-        return new ResponseEntity<>(filmService.addFilm(film), HttpStatus.OK);
+        return new ResponseEntity<>(filmService.addFilm(film), HttpStatus.CREATED);
     }
 
     @PutMapping("/films")
@@ -46,7 +44,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("DELETE /like: {}, {}", id, userId);
         filmService.deleteLike(id, userId);
