@@ -35,6 +35,13 @@ public class ControllerExceptionHandler {
         return Map.of("message", e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(DatabaseConstraintException e) {
+        log.warn(e.getMessage());
+        return Map.of("message", e.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(RuntimeException e) {

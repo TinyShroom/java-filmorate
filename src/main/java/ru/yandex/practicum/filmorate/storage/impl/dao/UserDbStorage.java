@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.DatabaseConstraintException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -63,12 +64,19 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriends(Long id, Long friendId) {
-
+        try {
+            jdbcTemplate.update("INSERT INTO friend(user_id, friend_id) values (?, ?)", id, friendId);
+        } catch (Exception e) {
+            throw new DatabaseConstraintException("user not found or already friend");
+        }
     }
 
     @Override
     public void deleteFriends(Long id, Long friendId) {
-
+        var result = jdbcTemplate.update("DELETE FROM friend WHERE user_id = ? AND friend_id = ?", id, friendId);
+        if (result < 1) {
+            throw new NotFoundException("friend not found");
+        }
     }
 
     @Override
@@ -100,5 +108,8 @@ public class UserDbStorage implements UserStorage {
                 birthdateLocalDate,
                 new HashSet<>()
         );
+    }
+    private boolean isUserExist(Long id) {
+        return jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id).next();
     }
 }
