@@ -39,8 +39,8 @@ public class UserDbStorage implements UserStorage {
                     "birthdate = ? " +
                 "WHERE id = ?";
 
-        var value = jdbcTemplate.update(sqlUpdateQuery, user.getEmail(), user.getLogin(), user.getName(), user.getBirthdate(),
-                user.getId());
+        var value = jdbcTemplate.update(sqlUpdateQuery, user.getEmail(), user.getLogin(), user.getName(),
+                user.getBirthdate(), user.getId());
         if (value < 1) {
             throw new NotFoundException(String.format("user with id %d not found", user.getId()));
         }
@@ -132,6 +132,7 @@ public class UserDbStorage implements UserStorage {
                 new HashSet<>()
         );
     }
+
     private boolean isUserExist(Long id) {
         return jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id).next();
     }

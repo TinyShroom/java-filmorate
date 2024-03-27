@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ import java.util.Set;
  * Film.
  */
 @Data
+@AllArgsConstructor
 public class Film {
     private long id;
     @NotBlank
@@ -25,16 +27,19 @@ public class Film {
     private LocalDate releaseDate;
     @Min(1)
     private int duration;
-    private RatingMpa ratingMpa;
+    private RatingMpa mpa;
+    @Setter(AccessLevel.NONE)
+    private final Set<Genre> genres;
     @Setter(AccessLevel.NONE)
     @JsonIgnore
     private final Set<Long> likes;
-    @Setter(AccessLevel.NONE)
-    private final Set<Genre> genre;
 
     public Film() {
         this.likes = new HashSet<>();
-        this.genre = new HashSet<>();
+        this.genres = new HashSet<>();
     }
 
+    public boolean addGenre(Genre genre) {
+        return genres.add(genre);
+    }
 }
