@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.DatabaseConstraintException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -40,7 +39,7 @@ public class UserDbStorage implements UserStorage {
                 "WHERE id = ?";
 
         var value = jdbcTemplate.update(sqlUpdateQuery, user.getEmail(), user.getLogin(), user.getName(),
-                user.getBirthdate(), user.getId());
+                user.getBirthday(), user.getId());
         if (value < 1) {
             throw new NotFoundException(String.format("user with id %d not found", user.getId()));
         }
@@ -67,20 +66,26 @@ public class UserDbStorage implements UserStorage {
         try {
             jdbcTemplate.update("INSERT INTO friend(user_id, friend_id) values (?, ?)", id, friendId);
         } catch (Exception e) {
-            throw new DatabaseConstraintException("user not found or already friend");
+            throw new NotFoundException("user not found or already friend");
         }
     }
 
     @Override
     public void deleteFriends(Long id, Long friendId) {
-        var result = jdbcTemplate.update("DELETE FROM friend WHERE user_id = ? AND friend_id = ?", id, friendId);
-        if (result < 1) {
-            throw new NotFoundException("friend not found");
+        if (!isUserExist(id)) {
+            throw new NotFoundException(String.format("user with id == %d not found", id));
         }
+        if (!isUserExist(friendId)) {
+            throw new NotFoundException(String.format("friend with id == %d not found", id));
+        }
+        jdbcTemplate.update("DELETE FROM friend WHERE user_id = ? AND friend_id = ?", id, friendId);
     }
 
     @Override
     public List<User> getFriends(Long id) {
+        if (!isUserExist(id)) {
+            throw new NotFoundException(String.format("user with id == %d not found", id));
+        }
         String sqlQuery =
                         "SELECT u.id,\n" +
                         "       u.email,\n" +
@@ -117,7 +122,7 @@ public class UserDbStorage implements UserStorage {
         values.put("email", user.getEmail());
         values.put("login", user.getLogin());
         values.put("name", user.getName());
-        values.put("birthdate", user.getBirthdate());
+        values.put("birthdate", user.getBirthday());
         return values;
     }
 

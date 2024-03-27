@@ -23,7 +23,7 @@ public class User {
     @Pattern(regexp = "\\S+")
     private String login;
     private String name;
-    private LocalDate birthdate;
+    private LocalDate birthday;
     @Setter(AccessLevel.NONE)
     @JsonIgnore
     private final Set<Long> friends;

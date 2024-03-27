@@ -28,12 +28,20 @@ public class FilmDbStorage implements FilmStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film")
                 .usingGeneratedKeyColumns("id");
-        film.setId(simpleJdbcInsert.executeAndReturnKey(filmToMap(film)).longValue());
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-            for (var genre: film.getGenres()) {
-                jdbcTemplate.update("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
-                        film.getId(), genre.getId());
+        try {
+            film.setId(simpleJdbcInsert.executeAndReturnKey(filmToMap(film)).longValue());
+        } catch (Exception e) {
+            throw new DatabaseConstraintException("invalid entity field");
+        }
+        try {
+            if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+                for (var genre : film.getGenres()) {
+                    jdbcTemplate.update("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
+                            film.getId(), genre.getId());
+                }
             }
+        } catch (Exception e) {
+            throw new DatabaseConstraintException("invalid genre");
         }
         return film;
     }
