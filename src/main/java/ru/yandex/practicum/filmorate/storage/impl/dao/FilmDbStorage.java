@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.exception.DatabaseConstraintException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
@@ -148,17 +149,56 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void putLike(Long id, Long userId) {
-
+        try {
+            jdbcTemplate.update("INSERT INTO film_likes(film_id, user_id) values (?, ?)", id, userId);
+        } catch (Exception e) {
+            throw new DatabaseConstraintException("film or user not found");
+        }
     }
 
     @Override
     public void deleteLike(Long id, Long userId) {
-
+        var result = jdbcTemplate.update("DELETE FROM film_likes WHERE film_id = ? AND user_id = ?", id, userId);
+        if (result < 1) {
+            throw new NotFoundException("film or user not found");
+        }
     }
 
     @Override
     public List<Film> getPopular(int count) {
-        return null;
+        String sqlReadFilmQuery = "SELECT f.id,\n" +
+                "    f.name AS film_name,\n" +
+                "    f.description,\n" +
+                "    f.release_date,\n" +
+                "    f.duration,\n" +
+                "    f.rating_id,\n" +
+                "    r.name AS rating_name\n" +
+                "FROM film AS f\n" +
+                "JOIN rating AS r ON f.rating_id = r.id\n" +
+                "LEFT JOIN film_likes AS l ON f.id = l.film_id\n" +
+                "GROUP BY f.id\n" +
+                "ORDER BY COUNT(l.film_id) DESC\n" +
+                "LIMIT ?;";
+        var films = jdbcTemplate.query(sqlReadFilmQuery, this::makeFilm, count);
+        String sqlReadGenreQuery = "SELECT f.film_id,\n" +
+                "    f.genre_id,\n" +
+                "    g.name\n" +
+                "FROM genre AS g\n" +
+                "JOIN film_genre AS f ON f.genre_id = g.id\n" +
+                "ORDER BY f.film_id;";
+        var filmGenres = jdbcTemplate.query(sqlReadGenreQuery, this::makeFilmGenre);
+        Map<Long, Set<Genre>> genresMap = new HashMap<>();
+        for (var filmGenre: filmGenres) {
+            genresMap.putIfAbsent(filmGenre.getId(), new HashSet<>());
+            genresMap.get(filmGenre.getId()).add(filmGenre.getGenre());
+        }
+        for (var film: films) {
+            var genres = genresMap.getOrDefault(film.getId(), new HashSet<>());
+            for (var genre: genres) {
+                film.addGenre(genre);
+            }
+        }
+        return films;
     }
 
     private Map<String, Object> filmToMap(Film film) {
