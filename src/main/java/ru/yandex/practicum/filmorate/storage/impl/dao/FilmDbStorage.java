@@ -28,20 +28,12 @@ public class FilmDbStorage implements FilmStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("film")
                 .usingGeneratedKeyColumns("id");
-        try {
-            film.setId(simpleJdbcInsert.executeAndReturnKey(filmToMap(film)).longValue());
-        } catch (Exception e) {
-            throw new DatabaseConstraintException("invalid entity field");
-        }
-        try {
-            if (film.getGenres() != null && !film.getGenres().isEmpty()) {
-                for (var genre : film.getGenres()) {
-                    jdbcTemplate.update("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
-                            film.getId(), genre.getId());
-                }
+        film.setId(simpleJdbcInsert.executeAndReturnKey(filmToMap(film)).longValue());
+        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+            for (var genre : film.getGenres()) {
+                jdbcTemplate.update("INSERT INTO film_genre(film_id, genre_id) VALUES (?, ?)",
+                        film.getId(), genre.getId());
             }
-        } catch (Exception e) {
-            throw new DatabaseConstraintException("invalid genre");
         }
         return film;
     }
@@ -60,7 +52,7 @@ public class FilmDbStorage implements FilmStorage {
                         "WHERE id = ?";
 
         var value = jdbcTemplate.update(sqlUpdateQuery, film.getName(), film.getDescription(), film.getReleaseDate(),
-                film.getDuration(), film.getMpa().getId(), film.getId());
+                    film.getDuration(), film.getMpa() == null ? null : film.getMpa().getId(), film.getId());
         if (value < 1) {
             throw new NotFoundException(String.format("film with id %d not found", film.getId()));
         }
@@ -80,7 +72,7 @@ public class FilmDbStorage implements FilmStorage {
                 "    f.rating_id,\n" +
                 "    r.name AS rating_name\n" +
                 "FROM film AS f\n" +
-                "JOIN rating AS r ON f.rating_id = r.id\n" +
+                "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "WHERE f.id = ?;";
 
         var updatedFilm = jdbcTemplate.queryForObject(sqlReadFilmQuery, this::makeFilm, film.getId());
@@ -106,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
                 "    f.rating_id,\n" +
                 "    r.name AS rating_name\n" +
                 "FROM film AS f\n" +
-                "JOIN rating AS r ON f.rating_id = r.id\n" +
+                "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "ORDER BY f.id;";
         var films = jdbcTemplate.query(sqlReadFilmQuery, this::makeFilm);
         String sqlReadGenreQuery = "SELECT f.film_id,\n" +
@@ -140,7 +132,7 @@ public class FilmDbStorage implements FilmStorage {
                 "    f.rating_id,\n" +
                 "    r.name AS rating_name\n" +
                 "FROM film AS f\n" +
-                "JOIN rating AS r ON f.rating_id = r.id\n" +
+                "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "WHERE f.id = ?;";
         var film = jdbcTemplate.queryForObject(sqlReadFilmQuery, this::makeFilm, id);
         String sqlReadGenreQuery = "SELECT g.id,\n" +
@@ -183,7 +175,7 @@ public class FilmDbStorage implements FilmStorage {
                 "    f.rating_id,\n" +
                 "    r.name AS rating_name\n" +
                 "FROM film AS f\n" +
-                "JOIN rating AS r ON f.rating_id = r.id\n" +
+                "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "LEFT JOIN film_likes AS l ON f.id = l.film_id\n" +
                 "GROUP BY f.id\n" +
                 "ORDER BY COUNT(l.film_id) DESC\n" +
@@ -223,12 +215,14 @@ public class FilmDbStorage implements FilmStorage {
     private Film makeFilm(ResultSet resultSet, int rowNum) throws SQLException {
         var releaseDate = resultSet.getDate("release_date");
         var releaseLocalDate = releaseDate == null ? null : releaseDate.toLocalDate();
+        var rating = resultSet.getInt("rating_id") < 1 ? null :
+                new RatingMpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name"));
         return new Film(resultSet.getLong("id"),
                 resultSet.getString("film_name"),
                 resultSet.getString("description"),
                 releaseLocalDate,
                 resultSet.getInt("duration"),
-                new RatingMpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name")),
+                rating,
                 new HashSet<>(),
                 new HashSet<>()
         );
