@@ -81,7 +81,16 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(Long id) {
-        return null;
+        String sqlQuery =
+                        "SELECT u.id,\n" +
+                        "       u.email,\n" +
+                        "       u.login,\n" +
+                        "       u.name,\n" +
+                        "       u.birthdate\n" +
+                        "FROM friend AS f\n" +
+                        "JOIN users AS u ON f.friend_id = u.id\n" +
+                        "WHERE f.user_id = ?;";
+        return jdbcTemplate.query(sqlQuery, this::makeUser, id);
     }
 
     @Override

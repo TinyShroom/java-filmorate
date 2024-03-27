@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS friend (
     user_id bigint REFERENCES users(id),
     friend_id bigint REFERENCES users(id),
 --    status boolean,
+    CONSTRAINT friend_self CHECK (user_id <> friend_id),
     PRIMARY KEY (user_id, friend_id)
 );
 
