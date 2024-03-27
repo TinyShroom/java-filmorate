@@ -94,8 +94,22 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getCommonFriends(Long id, Long otherId) {
-        return null;
+    public List<User> getCommonFriends(Long id, Long secondId) {
+        String sqlQuery =
+                "SELECT u.id,\n" +
+                        "    u.email,\n" +
+                        "    u.login,\n" +
+                        "    u.name,\n" +
+                        "    u.birthdate\n" +
+                        "FROM friend AS f\n" +
+                        "JOIN users AS u ON f.friend_id = u.id\n" +
+                        "WHERE f.user_id = ? AND f.friend_id IN (\n" +
+                        "    SELECT us.id\n" +
+                        "    FROM friend AS fs\n" +
+                        "    JOIN users AS us ON fs.friend_id = us.id\n" +
+                        "    WHERE fs.user_id = ?\n" +
+                        ");";
+        return jdbcTemplate.query(sqlQuery, this::makeUser, id, secondId);
     }
 
     private Map<String, Object> userToMap(User user) {

@@ -54,8 +54,11 @@ public class UserService {
         return userStorage.getFriends(id);
     }
 
-    public List<User> getCommonFriends(Long id, Long otherId) {
-        return userStorage.getCommonFriends(id, otherId);
+    public List<User> getCommonFriends(Long id, Long secondId) {
+        if (id.equals(secondId)) {
+            throw new ValidationException("firstId equals friendId");
+        }
+        return userStorage.getCommonFriends(id, secondId);
     }
 
 }

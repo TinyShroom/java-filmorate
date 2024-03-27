@@ -58,10 +58,10 @@ public class UserController {
         return userService.getFriends(id);
     }
 
-    @GetMapping("/users/{id}/friends/common/{otherId}")
+    @GetMapping("/users/{id}/friends/common/{secondId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
-        log.info("GET /friends/common: {}, {}", id, otherId);
-        return userService.getCommonFriends(id, otherId);
+    public List<User> getFriends(@PathVariable Long id, @PathVariable Long secondId) {
+        log.info("GET /friends/common: {}, {}", id, secondId);
+        return userService.getCommonFriends(id, secondId);
     }
 }
