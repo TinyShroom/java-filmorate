@@ -36,6 +36,12 @@ public class FilmController {
         return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>(filmService.getFilms()));
     }
 
+    @GetMapping("/films/{id}")
+    public Film getFilm(@PathVariable Long id) {
+        log.info("GET /film: {}", id);
+        return filmService.getFilm(id);
+    }
+
     @PutMapping("/films/{id}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public void putLike(@PathVariable Long id, @PathVariable Long userId) {

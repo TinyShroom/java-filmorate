@@ -147,7 +147,8 @@ public class FilmDbStorage implements FilmStorage {
                 "    g.name\n" +
                 "FROM genre AS g\n" +
                 "JOIN film_genre AS f ON f.genre_id = g.id\n" +
-                "WHERE f.film_id = ?;";
+                "WHERE f.film_id = ?\n" +
+                "ORDER BY g.id;";
         var genres = jdbcTemplate.query(sqlReadGenreQuery, this::makeGenre, id);
         for (var genre: genres) {
             film.addGenre(genre);

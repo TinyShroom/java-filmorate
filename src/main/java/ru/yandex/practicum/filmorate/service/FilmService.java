@@ -44,6 +44,10 @@ public class FilmService {
         return filmStorage.findAll();
     }
 
+    public Film getFilm(Long id) {
+        return filmStorage.findById(id);
+    }
+
     public void putLike(Long id, Long userId) {
         var user = userStorage.findById(userId);
         if (user == null) {
