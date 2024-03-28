@@ -90,7 +90,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         String sqlReadFilmQuery = "SELECT f.id,\n" +
                 "    f.name AS film_name,\n" +
                 "    f.description,\n" +

@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -33,7 +32,7 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Collection<Film> getFilms() {
+    public List<Film> getFilms() {
         return filmStorage.findAll();
     }
 

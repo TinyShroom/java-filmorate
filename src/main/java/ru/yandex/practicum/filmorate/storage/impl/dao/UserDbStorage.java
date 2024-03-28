@@ -12,7 +12,10 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 @Repository("userDbStorage")
 @RequiredArgsConstructor
@@ -50,7 +53,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         String sqlQuery =
                 "SELECT * " +
                 "FROM users;";

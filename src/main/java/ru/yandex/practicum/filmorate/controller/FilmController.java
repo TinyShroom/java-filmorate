@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -20,33 +19,42 @@ public class FilmController {
 
     @PostMapping("/films")
     @ResponseStatus(HttpStatus.CREATED)
-    public Film addFilm(@Valid @RequestBody Film film) {
+    public Film add(@Valid @RequestBody Film film) {
         log.info("POST /films: {}", film.toString());
-        return filmService.addFilm(film);
+        var resultFilm = filmService.addFilm(film);
+        log.info("completion POST /films: {}", resultFilm);
+        return resultFilm;
     }
 
     @PutMapping("/films")
-    public Film changeFilm(@Valid @RequestBody Film film) {
+    public Film change(@Valid @RequestBody Film film) {
         log.info("PUT /films: {}", film.toString());
-        return filmService.changeFilm(film);
+        var resultFilm = filmService.changeFilm(film);
+        log.info("completion PUT /films: {}", resultFilm);
+        return resultFilm;
     }
 
     @GetMapping("/films")
-    public List<Film> getFilms() {
+    public List<Film> getAll() {
         log.info("GET /films: all");
-        return new ArrayList<>(filmService.getFilms());
+        var resultFilms =  filmService.getFilms();
+        log.info("completion GET /films: size {}", resultFilms.size());
+        return resultFilms;
     }
 
     @GetMapping("/films/{id}")
-    public Film getFilm(@PathVariable Long id) {
+    public Film getById(@PathVariable Long id) {
         log.info("GET /film: {}", id);
-        return filmService.getFilm(id);
+        var resultFilm = filmService.getFilm(id);
+        log.info("completion GET /films: {}", resultFilm);
+        return resultFilm;
     }
 
     @PutMapping("/films/{id}/like/{userId}")
     public void putLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("PUT /like: {}, {}", id, userId);
         filmService.putLike(id, userId);
+        log.info("completion PUT /like: success");
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
@@ -54,12 +62,15 @@ public class FilmController {
     public void deleteLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("DELETE /like: {}, {}", id, userId);
         filmService.deleteLike(id, userId);
+        log.info("completion DELETE /like: success");
     }
 
     @GetMapping("/films/popular")
     @ResponseStatus(HttpStatus.OK)
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
         log.info("GET /popular: {}", count);
-        return filmService.getPopular(count);
+        var resultFilms = filmService.getPopular(count);
+        log.info("completion GET /popular: size {}", resultFilms.size());
+        return resultFilms;
     }
 }

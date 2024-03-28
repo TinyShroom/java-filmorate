@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.service.RatingMpaService;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -18,14 +18,18 @@ public class RatingMpaController {
     private final RatingMpaService ratingMpaService;
 
     @GetMapping("/mpa/{id}")
-    public RatingMpa getGenreById(@PathVariable Integer id) {
+    public RatingMpa getById(@PathVariable Integer id) {
         log.info("GET /mpa: {}", id);
-        return ratingMpaService.getById(id);
+        var mpa = ratingMpaService.getById(id);
+        log.info("completion GET /mpa: {}", mpa);
+        return mpa;
     }
 
     @GetMapping("/mpa")
-    public Collection<RatingMpa> getFilms() {
+    public List<RatingMpa> getAll() {
         log.info("GET /mpa: all");
-        return ratingMpaService.getAll();
+        var result = ratingMpaService.getAll();
+        log.info("completion GET /mpa: size {}", result.size());
+        return result;
     }
 }

@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.RatingMpaStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
 @Repository("ratingMpaDbStorage")
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class RatingMpaDbStorage implements RatingMpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<RatingMpa> findAll() {
+    public List<RatingMpa> findAll() {
         return jdbcTemplate.query("SELECT * FROM rating;", this::makeRatingMpa);
     }
 

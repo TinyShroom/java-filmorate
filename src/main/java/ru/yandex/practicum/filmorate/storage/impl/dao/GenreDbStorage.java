@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
 @Repository("genreDbStorage")
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<Genre> findAll() {
+    public List<Genre> findAll() {
         return jdbcTemplate.query("SELECT * FROM genre;", this::makeGenre);
     }
 
