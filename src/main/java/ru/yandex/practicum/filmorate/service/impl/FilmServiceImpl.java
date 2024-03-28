@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import javax.validation.ValidationException;
 import java.util.List;
 
 @Service
@@ -58,9 +57,6 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getPopular(int count) {
-        if (count < 1) {
-            throw new ValidationException("GET popular: count must be greater than 0");
-        }
         return filmStorage.getPopular(count);
     }
 }
