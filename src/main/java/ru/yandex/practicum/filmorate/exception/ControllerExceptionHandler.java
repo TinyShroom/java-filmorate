@@ -9,9 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.model.ErrorDto;
 
 import javax.validation.ValidationException;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -19,57 +19,57 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(ValidationException e) {
-        log.warn("ValidationException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(ValidationException e) {
+        log.info("ValidationException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(MethodArgumentNotValidException e) {
-        log.warn("MethodArgumentNotValidException: " + e.getMessage());
-        return Map.of("message", "Validation exception");
+    public ErrorDto exceptionHandler(MethodArgumentNotValidException e) {
+        log.info("MethodArgumentNotValidException: " + e.getMessage());
+        return new ErrorDto("Validation exception");
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(NotFoundException e) {
-        log.warn("NotFoundException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(NotFoundException e) {
+        log.info("NotFoundException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(DatabaseConstraintException e) {
-        log.warn("DatabaseConstraintException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(ConstraintException e) {
+        log.info("DatabaseConstraintException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(EmptyResultDataAccessException e) {
-        log.warn("EmptyResultDataAccessException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(EmptyResultDataAccessException e) {
+        log.info("EmptyResultDataAccessException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(DataIntegrityViolationException e) {
-        log.warn("DataIntegrityViolationException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(DataIntegrityViolationException e) {
+        log.info("DataIntegrityViolationException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(DuplicateKeyException e) {
-        log.warn("DuplicateKeyException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(DuplicateKeyException e) {
+        log.info("DuplicateKeyException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    public Map<String, String> exceptionHandler(RuntimeException e) {
-        log.warn("RuntimeException: " + e.getMessage());
-        return Map.of("message", e.getMessage());
+    public ErrorDto exceptionHandler(RuntimeException e) {
+        log.info("RuntimeException: " + e.getMessage());
+        return new ErrorDto(e.getMessage());
     }
 }

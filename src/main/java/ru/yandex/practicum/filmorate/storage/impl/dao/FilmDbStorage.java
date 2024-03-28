@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.exception.DatabaseConstraintException;
+import ru.yandex.practicum.filmorate.exception.ConstraintException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
@@ -154,7 +154,7 @@ public class FilmDbStorage implements FilmStorage {
         try {
             jdbcTemplate.update("INSERT INTO film_likes(film_id, user_id) values (?, ?)", id, userId);
         } catch (Exception e) {
-            throw new DatabaseConstraintException("film or user not found");
+            throw new ConstraintException("film or user not found");
         }
     }
 
@@ -224,7 +224,6 @@ public class FilmDbStorage implements FilmStorage {
                 releaseLocalDate,
                 resultSet.getInt("duration"),
                 rating,
-                new HashSet<>(),
                 new HashSet<>()
         );
     }
