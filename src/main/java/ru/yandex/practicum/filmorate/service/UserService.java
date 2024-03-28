@@ -1,57 +1,22 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import javax.validation.ValidationException;
-import java.util.ArrayList;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+public interface UserService {
 
-    @Qualifier("userDbStorage")
-    private final UserStorage userStorage;
+    User addUser(User user);
 
-    public User addUser(User user) {
-        return userStorage.create(user);
-    }
+    User changeUser(User user);
 
-    public User changeUser(User user) {
-        return userStorage.update(user);
-    }
+    List<User> getUsers();
 
-    public List<User> getUsers() {
-        return new ArrayList<>(userStorage.findAll());
-    }
+    void addFriends(Long id, Long friendId);
 
-    public void addFriends(Long id, Long friendId) {
-        if (id.equals(friendId)) {
-            throw new ValidationException("PUT friends: id equals friendId");
-        }
-        userStorage.addFriends(id, friendId);
-    }
+    void deleteFriends(Long id, Long friendId);
 
-    public void deleteFriends(Long id, Long friendId) {
-        if (id.equals(friendId)) {
-            throw new ValidationException("DELETE friends: id equals friendId");
-        }
-        userStorage.deleteFriends(id, friendId);
-    }
+    List<User> getFriends(Long id);
 
-    public List<User> getFriends(Long id) {
-        return userStorage.getFriends(id);
-    }
-
-    public List<User> getCommonFriends(Long id, Long secondId) {
-        if (id.equals(secondId)) {
-            throw new ValidationException("firstId equals friendId");
-        }
-        return userStorage.getCommonFriends(id, secondId);
-    }
-
+    List<User> getCommonFriends(Long id, Long secondId);
 }

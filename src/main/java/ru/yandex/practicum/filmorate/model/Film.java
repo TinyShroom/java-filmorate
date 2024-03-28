@@ -28,7 +28,7 @@ public class Film {
     private LocalDate releaseDate;
     @Min(1)
     private int duration;
-    private RatingMpa mpa;
+    private Mpa mpa;
     @Setter(AccessLevel.NONE)
     private final Set<Genre> genres;
 

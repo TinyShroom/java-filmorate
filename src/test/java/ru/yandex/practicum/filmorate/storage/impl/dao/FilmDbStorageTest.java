@@ -10,7 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -41,12 +41,12 @@ class FilmDbStorageTest {
             6, new Genre(6, "Боевик")
     );
 
-    private static final Map<Integer, RatingMpa> ratings = Map.of(
-            1, new RatingMpa(1, "G"),
-            2, new RatingMpa(2, "PG"),
-            3, new RatingMpa(3, "PG-13"),
-            4, new RatingMpa(4, "R"),
-            5, new RatingMpa(5, "NC-17")
+    private static final Map<Integer, Mpa> ratings = Map.of(
+            1, new Mpa(1, "G"),
+            2, new Mpa(2, "PG"),
+            3, new Mpa(3, "PG-13"),
+            4, new Mpa(4, "R"),
+            5, new Mpa(5, "NC-17")
     );
 
     @BeforeEach
@@ -107,7 +107,7 @@ class FilmDbStorageTest {
 
     @Test
     public void createFilmBadMpa() {
-        filmWithoutMpa.setMpa(new RatingMpa(9999999, ""));
+        filmWithoutMpa.setMpa(new Mpa(9999999, ""));
         assertThatThrownBy(() -> filmDbStorage.create(filmWithoutMpa))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
@@ -134,7 +134,7 @@ class FilmDbStorageTest {
     public void updateFilmBadMpa() {
         var id = filmDbStorage.create(film).getId();
         filmWithoutMpa.setId(id);
-        filmWithoutMpa.setMpa(new RatingMpa(9999999, ""));
+        filmWithoutMpa.setMpa(new Mpa(9999999, ""));
         assertThatThrownBy(() -> filmDbStorage.update(filmWithoutMpa))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }

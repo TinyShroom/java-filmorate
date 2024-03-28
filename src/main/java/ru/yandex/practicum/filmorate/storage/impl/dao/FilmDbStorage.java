@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.impl.dao;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -8,9 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.exception.ConstraintException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.ResultSet;
@@ -217,7 +218,7 @@ public class FilmDbStorage implements FilmStorage {
         var releaseDate = resultSet.getDate("release_date");
         var releaseLocalDate = releaseDate == null ? null : releaseDate.toLocalDate();
         var rating = resultSet.getInt("rating_id") < 1 ? null :
-                new RatingMpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name"));
+                new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name"));
         return new Film(resultSet.getLong("id"),
                 resultSet.getString("film_name"),
                 resultSet.getString("description"),
@@ -238,5 +239,12 @@ public class FilmDbStorage implements FilmStorage {
         return new FilmGenre(resultSet.getLong("film_id"),
                 new Genre(resultSet.getInt("genre_id"), resultSet.getString("name"))
         );
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class FilmGenre {
+        private long id;
+        private Genre genre;
     }
 }

@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl.dao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.RatingMpaStorage;
 
 import java.sql.ResultSet;
@@ -17,16 +17,16 @@ public class RatingMpaDbStorage implements RatingMpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<RatingMpa> findAll() {
+    public List<Mpa> findAll() {
         return jdbcTemplate.query("SELECT * FROM rating;", this::makeRatingMpa);
     }
 
     @Override
-    public RatingMpa findById(Integer id) {
+    public Mpa findById(Integer id) {
         return jdbcTemplate.queryForObject("SELECT * FROM rating WHERE id = ?", this::makeRatingMpa, id);
     }
 
-    private RatingMpa makeRatingMpa(ResultSet resultSet, int rowNum) throws SQLException {
-        return new RatingMpa(resultSet.getInt("id"), resultSet.getString("name"));
+    private Mpa makeRatingMpa(ResultSet resultSet, int rowNum) throws SQLException {
+        return new Mpa(resultSet.getInt("id"), resultSet.getString("name"));
     }
 }
