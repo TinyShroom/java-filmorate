@@ -64,5 +64,4 @@ public class ControllerExceptionHandler {
         log.warn("RuntimeException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
-
 }

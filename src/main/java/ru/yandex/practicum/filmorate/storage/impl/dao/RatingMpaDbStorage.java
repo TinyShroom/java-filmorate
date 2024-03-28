@@ -13,6 +13,7 @@ import java.util.Collection;
 @Repository("ratingMpaDbStorage")
 @RequiredArgsConstructor
 public class RatingMpaDbStorage implements RatingMpaStorage {
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
