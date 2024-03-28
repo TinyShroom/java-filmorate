@@ -48,6 +48,7 @@ class FilmDbStorageTest {
             4, new RatingMpa(4, "R"),
             5, new RatingMpa(5, "NC-17")
     );
+
     @BeforeEach
     public void init() {
         filmDbStorage = new FilmDbStorage(jdbcTemplate);
