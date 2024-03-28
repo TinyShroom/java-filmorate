@@ -10,8 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * Film.
@@ -30,10 +29,10 @@ public class Film {
     private int duration;
     private Mpa mpa;
     @Setter(AccessLevel.NONE)
-    private final Set<Genre> genres;
+    private final LinkedHashSet<Genre> genres;
 
     public Film() {
-        this.genres = new HashSet<>();
+        this.genres = new LinkedHashSet<>();
     }
 
     public void addGenre(Genre genre) {

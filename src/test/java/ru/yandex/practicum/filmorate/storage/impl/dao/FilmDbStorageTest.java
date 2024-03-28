@@ -57,19 +57,19 @@ class FilmDbStorageTest {
         film = new Film(1, "film_name", "film_description",
                 LocalDate.of(2000, 5, 3),
                 10, ratings.get(1),
-                new HashSet<>(Set.of(genres.get(1), genres.get(2), genres.get(3))));
+                new LinkedHashSet<>(Set.of(genres.get(1), genres.get(2), genres.get(3))));
         filmWithoutGenre = new Film(2, "without_genre", "without_genre_description",
                 LocalDate.of(2001, 6, 4),
                 20, ratings.get(2),
-                new HashSet<>());
+                new LinkedHashSet<>());
         filmWithoutMpa = new Film(1, "without_rating", "without_rating_description",
                 LocalDate.of(2003, 7, 8),
                 30, null,
-                new HashSet<>(Set.of(genres.get(3), genres.get(4), genres.get(5))));
+                new LinkedHashSet<>(Set.of(genres.get(3), genres.get(4), genres.get(5))));
         filmWithoutAll = new Film(1, "without", "without_description",
                 LocalDate.of(2005, 10, 11),
                 40, null,
-                new HashSet<>());
+                new LinkedHashSet<>());
         user = new User(10, "user@mail.com", "user_login", "user_name",
                 LocalDate.of(2000, 5, 3), new HashSet<>());
     }
