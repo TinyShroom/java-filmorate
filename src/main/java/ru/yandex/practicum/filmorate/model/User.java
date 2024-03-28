@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ public class User {
     @Pattern(regexp = "\\S+")
     private String login;
     private String name;
+    @PastOrPresent
     private LocalDate birthday;
     @Setter(AccessLevel.NONE)
     @JsonIgnore
@@ -30,5 +32,12 @@ public class User {
 
     public User() {
         this.friends = new HashSet<>();
+    }
+
+    public String getName() {
+        if (name == null || name.isBlank()) {
+            return login;
+        }
+        return name;
     }
 }

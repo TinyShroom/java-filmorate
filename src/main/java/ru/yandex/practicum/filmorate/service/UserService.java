@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.utils.Validator;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -19,16 +18,10 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User addUser(User user) {
-        if (!Validator.isUserValid(user)) {
-            throw new ValidationException("POST /users: birthdate must not be in the future");
-        }
         return userStorage.create(user);
     }
 
     public User changeUser(User user) {
-        if (!Validator.isUserValid(user)) {
-            throw new ValidationException("PUT /users: birthdate must not be in the future");
-        }
         return userStorage.update(user);
     }
 
