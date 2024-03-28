@@ -19,49 +19,49 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(ValidationException e) {
-        log.warn(e.getMessage());
+        log.warn("ValidationException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(MethodArgumentNotValidException e) {
-        log.warn(e.getMessage());
+        log.warn("MethodArgumentNotValidException: " + e.getMessage());
         return Map.of("message", "Validation exception");
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(NotFoundException e) {
-        log.warn(e.getMessage());
+        log.warn("NotFoundException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(DatabaseConstraintException e) {
-        log.warn(e.getMessage());
+        log.warn("DatabaseConstraintException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(EmptyResultDataAccessException e) {
-        log.warn(e.getMessage());
+        log.warn("EmptyResultDataAccessException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(DataIntegrityViolationException e) {
-        log.warn(e.getMessage());
+        log.warn("DataIntegrityViolationException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
     public Map<String, String> exceptionHandler(RuntimeException e) {
-        log.warn(e.getMessage());
+        log.warn("RuntimeException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 
