@@ -121,7 +121,7 @@ class FilmControllerTest {
         when(filmService.addFilm(mapper.readValue(content, Film.class)))
                 .thenReturn(mapper.readValue(answer, Film.class));
         mockMvc.perform(mockRequest)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)));
 
         content = "{\"name\": \"F\",\"duration\": 1}";
@@ -135,7 +135,7 @@ class FilmControllerTest {
                 .thenReturn(mapper.readValue(answer, Film.class));
 
         mockMvc.perform(mockRequest)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)));
     }
 

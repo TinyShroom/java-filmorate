@@ -49,7 +49,7 @@ class UserControllerTest {
         when(userService.addUser(mapper.readValue(content, User.class)))
                 .thenReturn(mapper.readValue(answer, User.class));
         mockMvc.perform(mockRequest)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("User_login")));
 
         var date = LocalDate.now();
@@ -67,7 +67,7 @@ class UserControllerTest {
                 .thenReturn(mapper.readValue(answer, User.class));
 
         mockMvc.perform(mockRequest)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(2)));
     }
 
