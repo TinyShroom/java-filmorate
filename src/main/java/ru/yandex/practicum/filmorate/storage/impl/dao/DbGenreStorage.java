@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository("genreDbStorage")
 @RequiredArgsConstructor
-public class GenreDbStorage implements GenreStorage {
+public class DbGenreStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 

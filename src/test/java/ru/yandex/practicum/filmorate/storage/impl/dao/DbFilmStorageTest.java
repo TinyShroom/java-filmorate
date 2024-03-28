@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class FilmDbStorageTest {
+class DbFilmStorageTest {
 
     private final JdbcTemplate jdbcTemplate;
     private User user;
@@ -29,8 +29,8 @@ class FilmDbStorageTest {
     private Film filmWithoutGenre;
     private Film filmWithoutMpa;
     private Film filmWithoutAll;
-    private FilmDbStorage filmDbStorage;
-    private UserDbStorage userDbStorage;
+    private DbFilmStorage dbFilmStorage;
+    private DbUserStorage dbUserStorage;
 
     private static final Map<Integer, Genre> genres = Map.of(
             1, new Genre(1, "Комедия"),
@@ -51,8 +51,8 @@ class FilmDbStorageTest {
 
     @BeforeEach
     public void init() {
-        filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        userDbStorage = new UserDbStorage(jdbcTemplate);
+        dbFilmStorage = new DbFilmStorage(jdbcTemplate);
+        dbUserStorage = new DbUserStorage(jdbcTemplate);
 
         film = new Film(1, "film_name", "film_description",
                 LocalDate.of(2000, 5, 3),
@@ -76,28 +76,28 @@ class FilmDbStorageTest {
 
     @Test
     public void createFilmSuccess() {
-        var returnedFilm = filmDbStorage.create(film);
+        var returnedFilm = dbFilmStorage.create(film);
         film.setId(returnedFilm.getId());
         assertThat(returnedFilm)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(film);
 
-        returnedFilm = filmDbStorage.create(filmWithoutGenre);
+        returnedFilm = dbFilmStorage.create(filmWithoutGenre);
         filmWithoutGenre.setId(returnedFilm.getId());
         assertThat(returnedFilm)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(filmWithoutGenre);
 
-        returnedFilm = filmDbStorage.create(filmWithoutMpa);
+        returnedFilm = dbFilmStorage.create(filmWithoutMpa);
         filmWithoutMpa.setId(returnedFilm.getId());
         assertThat(returnedFilm)
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(filmWithoutMpa);
 
-        returnedFilm = filmDbStorage.create(filmWithoutAll);
+        returnedFilm = dbFilmStorage.create(filmWithoutAll);
         filmWithoutAll.setId(returnedFilm.getId());
         assertThat(returnedFilm)
                 .isNotNull()
@@ -108,22 +108,22 @@ class FilmDbStorageTest {
     @Test
     public void createFilmBadMpa() {
         filmWithoutMpa.setMpa(new Mpa(9999999, ""));
-        assertThatThrownBy(() -> filmDbStorage.create(filmWithoutMpa))
+        assertThatThrownBy(() -> dbFilmStorage.create(filmWithoutMpa))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     public void createFilmBadGenre() {
         film.addGenre(new Genre(9999999, ""));
-        assertThatThrownBy(() -> filmDbStorage.create(film))
+        assertThatThrownBy(() -> dbFilmStorage.create(film))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     public void updateFilmSuccess() {
-        var id = filmDbStorage.create(film).getId();
+        var id = dbFilmStorage.create(film).getId();
         filmWithoutMpa.setId(id);
-        var returnedFilm = filmDbStorage.update(filmWithoutMpa);
+        var returnedFilm = dbFilmStorage.update(filmWithoutMpa);
         assertThat(returnedFilm)
                 .isNotNull()
                 .usingRecursiveComparison()
@@ -132,43 +132,43 @@ class FilmDbStorageTest {
 
     @Test
     public void updateFilmBadMpa() {
-        var id = filmDbStorage.create(film).getId();
+        var id = dbFilmStorage.create(film).getId();
         filmWithoutMpa.setId(id);
         filmWithoutMpa.setMpa(new Mpa(9999999, ""));
-        assertThatThrownBy(() -> filmDbStorage.update(filmWithoutMpa))
+        assertThatThrownBy(() -> dbFilmStorage.update(filmWithoutMpa))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     public void updateFilmBadGenre() {
-        var id = filmDbStorage.create(film).getId();
+        var id = dbFilmStorage.create(film).getId();
         film.setId(id);
         film.addGenre(new Genre(9999999, ""));
-        assertThatThrownBy(() -> filmDbStorage.update(film))
+        assertThatThrownBy(() -> dbFilmStorage.update(film))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
     public void findAllEmpty() {
-        assertThat(filmDbStorage.findAll())
+        assertThat(dbFilmStorage.findAll())
                 .isNotNull()
                 .isEmpty();
     }
 
     @Test
     public void findAllNotEmpty() {
-        filmDbStorage.create(film);
-        filmDbStorage.create(filmWithoutMpa);
-        assertThat(filmDbStorage.findAll())
+        dbFilmStorage.create(film);
+        dbFilmStorage.create(filmWithoutMpa);
+        assertThat(dbFilmStorage.findAll())
                 .isNotNull()
                 .hasSize(2);
     }
 
     @Test
     public void findByIdFilmSuccess() {
-        var id = filmDbStorage.create(film).getId();
+        var id = dbFilmStorage.create(film).getId();
         film.setId(id);
-        assertThat(filmDbStorage.findById(id))
+        assertThat(dbFilmStorage.findById(id))
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(film);
@@ -176,22 +176,22 @@ class FilmDbStorageTest {
 
     @Test
     public void findByIdFilmNotFound() {
-        assertThatThrownBy(() -> filmDbStorage.findById(10L))
+        assertThatThrownBy(() -> dbFilmStorage.findById(10L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
     public void getPopularEmpty() {
-        assertThat(filmDbStorage.getPopular(10))
+        assertThat(dbFilmStorage.getPopular(10))
                 .isNotNull()
                 .isEmpty();
     }
 
     @Test
     public void getPopularWithoutLikes() {
-        filmDbStorage.create(film);
-        filmDbStorage.create(filmWithoutMpa);
-        assertThat(filmDbStorage.getPopular(10))
+        dbFilmStorage.create(film);
+        dbFilmStorage.create(filmWithoutMpa);
+        assertThat(dbFilmStorage.getPopular(10))
                 .isNotNull()
                 .hasSize(2);
     }
@@ -199,29 +199,29 @@ class FilmDbStorageTest {
     @Test
     public void getPopularWithLikes() {
         List<Long> filmsId = new ArrayList<>();
-        filmsId.add(filmDbStorage.create(film).getId());
-        filmsId.add(filmDbStorage.create(filmWithoutMpa).getId());
-        filmsId.add(filmDbStorage.create(filmWithoutGenre).getId());
-        filmsId.add(filmDbStorage.create(filmWithoutAll).getId());
+        filmsId.add(dbFilmStorage.create(film).getId());
+        filmsId.add(dbFilmStorage.create(filmWithoutMpa).getId());
+        filmsId.add(dbFilmStorage.create(filmWithoutGenre).getId());
+        filmsId.add(dbFilmStorage.create(filmWithoutAll).getId());
 
         List<Long> usersId = new ArrayList<>();
-        usersId.add(userDbStorage.create(user).getId());
-        usersId.add(userDbStorage.create(user).getId());
-        usersId.add(userDbStorage.create(user).getId());
+        usersId.add(dbUserStorage.create(user).getId());
+        usersId.add(dbUserStorage.create(user).getId());
+        usersId.add(dbUserStorage.create(user).getId());
 
-        filmDbStorage.putLike(filmsId.get(2), usersId.get(0));
-        filmDbStorage.putLike(filmsId.get(2), usersId.get(1));
-        filmDbStorage.putLike(filmsId.get(2), usersId.get(2));
+        dbFilmStorage.putLike(filmsId.get(2), usersId.get(0));
+        dbFilmStorage.putLike(filmsId.get(2), usersId.get(1));
+        dbFilmStorage.putLike(filmsId.get(2), usersId.get(2));
 
-        filmDbStorage.putLike(filmsId.get(0), usersId.get(0));
-        filmDbStorage.putLike(filmsId.get(0), usersId.get(1));
+        dbFilmStorage.putLike(filmsId.get(0), usersId.get(0));
+        dbFilmStorage.putLike(filmsId.get(0), usersId.get(1));
 
-        filmDbStorage.putLike(filmsId.get(3), usersId.get(0));
+        dbFilmStorage.putLike(filmsId.get(3), usersId.get(0));
 
-        assertThat(filmDbStorage.getPopular(2))
+        assertThat(dbFilmStorage.getPopular(2))
                 .isNotNull()
                 .hasSize(2);
-        var films = filmDbStorage.getPopular(10);
+        var films = dbFilmStorage.getPopular(10);
         assertThat(films)
                 .isNotNull()
                 .hasSize(filmsId.size());
@@ -241,7 +241,7 @@ class FilmDbStorageTest {
 
     @Test
     public void putLike() {
-        assertThatThrownBy(() -> filmDbStorage.findById(10L))
+        assertThatThrownBy(() -> dbFilmStorage.findById(10L))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

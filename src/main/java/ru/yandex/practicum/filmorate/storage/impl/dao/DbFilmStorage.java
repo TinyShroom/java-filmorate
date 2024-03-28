@@ -20,7 +20,7 @@ import java.util.*;
 
 @Repository("filmDbStorage")
 @RequiredArgsConstructor
-public class FilmDbStorage implements FilmStorage {
+public class DbFilmStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
 

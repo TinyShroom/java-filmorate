@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class UserDbStorageTest {
+class DbUserStorageTest {
 
     private final JdbcTemplate jdbcTemplate;
     private User user;
     private User secondUser;
-    private UserDbStorage userStorage;
+    private DbUserStorage userStorage;
 
     @BeforeEach
     public void init() {
-        userStorage = new UserDbStorage(jdbcTemplate);
+        userStorage = new DbUserStorage(jdbcTemplate);
         user = new User(10, "user@mail.com", "user_login", "user_name",
                 LocalDate.of(2000, 5, 3), new HashSet<>());
         secondUser = new User(2, "newuser@mail.com", "new_user_login", "new_user_name",

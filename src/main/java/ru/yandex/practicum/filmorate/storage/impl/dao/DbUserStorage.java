@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Repository("userDbStorage")
 @RequiredArgsConstructor
-public class UserDbStorage implements UserStorage {
+public class DbUserStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 

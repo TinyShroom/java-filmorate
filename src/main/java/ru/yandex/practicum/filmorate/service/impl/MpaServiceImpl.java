@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
-import ru.yandex.practicum.filmorate.storage.RatingMpaStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
 
@@ -12,15 +12,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MpaServiceImpl implements MpaService {
 
-    private final RatingMpaStorage ratingMpaStorage;
+    private final MpaStorage mpaStorage;
 
     @Override
     public Mpa getById(int id) {
-        return ratingMpaStorage.findById(id);
+        return mpaStorage.findById(id);
     }
 
     @Override
     public List<Mpa> getAll() {
-        return ratingMpaStorage.findAll();
+        return mpaStorage.findAll();
     }
 }

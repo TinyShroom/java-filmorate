@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Map;
 
@@ -16,46 +16,46 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class GenreDbStorageTest {
+class DbMpaStorageTest {
 
     private final JdbcTemplate jdbcTemplate;
-    private GenreDbStorage genreDbStorage;
+    private DbMpaStorage ratingDbMpaStorage;
 
-    private static final Map<Integer, Genre> genres = Map.of(
-            1, new Genre(1, "Комедия"),
-            2, new Genre(2, "Драма"),
-            3, new Genre(3, "Мультфильм"),
-            4, new Genre(4, "Триллер"),
-            5, new Genre(5, "Документальный"),
-            6, new Genre(6, "Боевик")
+    private static final Map<Integer, Mpa> ratings = Map.of(
+            1, new Mpa(1, "G"),
+            2, new Mpa(2, "PG"),
+            3, new Mpa(3, "PG-13"),
+            4, new Mpa(4, "R"),
+            5, new Mpa(5, "NC-17")
     );
 
     @BeforeEach
     public void init() {
-        genreDbStorage = new GenreDbStorage(jdbcTemplate);
+        ratingDbMpaStorage = new DbMpaStorage(jdbcTemplate);
     }
 
     @Test
     public void findGenresAll() {
-        assertThat(genreDbStorage.findAll())
+        assertThat(ratingDbMpaStorage.findAll())
                 .isNotNull()
-                .hasSize(genres.size())
+                .hasSize(ratings.size())
                 .usingRecursiveComparison()
-                .isEqualTo(genres.values());
+                .isEqualTo(ratings.values());
     }
 
     @Test
     public void findGenresById() {
         var id = 3;
-        assertThat(genreDbStorage.findById(id))
+        assertThat(ratingDbMpaStorage.findById(id))
                 .isNotNull()
-                .isEqualTo(genres.get(id));
+                .isEqualTo(ratings.get(id));
     }
 
     @Test
     public void findGenresByIdNotFound() {
         var id = Integer.MAX_VALUE;
-        assertThatThrownBy(() -> genreDbStorage.findById(id))
+        assertThatThrownBy(() -> ratingDbMpaStorage.findById(id))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
+
 }
