@@ -25,7 +25,6 @@ class FilmDbStorageTest {
 
     private final JdbcTemplate jdbcTemplate;
     private User user;
-    private User secondUser;
     private Film film;
     private Film filmWithoutGenre;
     private Film filmWithoutMpa;
@@ -76,8 +75,6 @@ class FilmDbStorageTest {
                 new HashSet<>());
         user = new User(10, "user@mail.com", "user_login", "user_name",
                 LocalDate.of(2000, 5, 3), new HashSet<>());
-        secondUser = new User(2, "newuser@mail.com", "new_user_login", "new_user_name",
-                LocalDate.of(2001, 6, 4), new HashSet<>());
     }
 
     @Test
