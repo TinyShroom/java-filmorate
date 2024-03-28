@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.impl.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -65,8 +67,10 @@ public class UserDbStorage implements UserStorage {
     public void addFriends(Long id, Long friendId) {
         try {
             jdbcTemplate.update("INSERT INTO friend(user_id, friend_id) values (?, ?)", id, friendId);
-        } catch (Exception e) {
-            throw new NotFoundException("user not found or already friend");
+        } catch (DuplicateKeyException e) {
+            throw new DuplicateKeyException("user already friend");
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("user not found");
         }
     }
 

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,6 +56,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler
     public Map<String, String> exceptionHandler(DataIntegrityViolationException e) {
         log.warn("DataIntegrityViolationException: " + e.getMessage());
+        return Map.of("message", e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public Map<String, String> exceptionHandler(DuplicateKeyException e) {
+        log.warn("DuplicateKeyException: " + e.getMessage());
         return Map.of("message", e.getMessage());
     }
 

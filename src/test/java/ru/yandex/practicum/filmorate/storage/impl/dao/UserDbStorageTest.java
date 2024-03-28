@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -137,7 +138,7 @@ class UserDbStorageTest {
         var friendId = userStorage.create(secondUser).getId();
         userStorage.addFriends(userId, friendId);
         assertThatThrownBy(() -> userStorage.addFriends(userId, friendId))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test

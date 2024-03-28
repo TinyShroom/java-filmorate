@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import javax.validation.ValidationException;
 import java.time.LocalDate;
 
 import static org.hamcrest.core.Is.is;
@@ -152,12 +151,9 @@ class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
-        when(userService.addUser(mapper.readValue(content, User.class)))
-                .thenThrow(new ValidationException("POST /users: birthdate must not be in the future"));
-
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("POST /users: birthdate must not be in the future")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -270,15 +266,12 @@ class UserControllerTest {
         var content = "{\"id\": 1,\"email\": \"user@mail.com\",\"login\": \"User_login\"," +
                 "\"name\": \"User name\",\"birthday\": \"" + date + "\"}";
 
-        when(userService.changeUser(mapper.readValue(content, User.class)))
-                .thenThrow(new ValidationException("PUT /users: birthdate must not be in the future"));
-
         var mockRequest = MockMvcRequestBuilders.put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("PUT /users: birthdate must not be in the future")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 }

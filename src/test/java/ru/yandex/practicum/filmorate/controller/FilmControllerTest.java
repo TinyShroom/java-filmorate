@@ -14,8 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import javax.validation.ValidationException;
-
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -79,11 +77,9 @@ class FilmControllerTest {
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/films")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
-        when(filmService.addFilm(mapper.readValue(content, Film.class)))
-                .thenThrow(new ValidationException("POST /films: release date must be after 1895-12-28"));
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("POST /films: release date must be after 1895-12-28")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
@@ -196,12 +192,9 @@ class FilmControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(content);
 
-        when(filmService.addFilm(mapper.readValue(content, Film.class)))
-                .thenThrow(new ValidationException("PUT /films: release date must be after 1895-12-28"));
-
         mockMvc.perform(mockRequest)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("PUT /films: release date must be after 1895-12-28")));
+                .andExpect(jsonPath("$.message", is("Validation exception")));
     }
 
     @Test
