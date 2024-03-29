@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 // https://www.baeldung.com/spring-mvc-custom-validator
 @Documented
 @Constraint(validatedBy = ReleaseDateValidator.class)
-@Target( { ElementType.METHOD, ElementType.FIELD })
+@Target({ ElementType.METHOD, ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ReleaseDateConstraint {
 
