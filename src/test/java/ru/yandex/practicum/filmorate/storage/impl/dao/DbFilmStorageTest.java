@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -123,8 +122,7 @@ class DbFilmStorageTest {
     public void updateFilmSuccess() {
         var id = dbFilmStorage.create(film).getId();
         filmWithoutMpa.setId(id);
-        var returnedFilm = dbFilmStorage.update(filmWithoutMpa);
-        assertThat(returnedFilm)
+        assertThat(dbFilmStorage.update(filmWithoutMpa).get())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(filmWithoutMpa);
@@ -168,7 +166,7 @@ class DbFilmStorageTest {
     public void findByIdFilmSuccess() {
         var id = dbFilmStorage.create(film).getId();
         film.setId(id);
-        assertThat(dbFilmStorage.findById(id))
+        assertThat(dbFilmStorage.findById(id).get())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(film);
@@ -176,8 +174,7 @@ class DbFilmStorageTest {
 
     @Test
     public void findByIdFilmNotFound() {
-        assertThatThrownBy(() -> dbFilmStorage.findById(10L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(dbFilmStorage.findById(10L)).isEmpty();
     }
 
     @Test
@@ -237,11 +234,5 @@ class DbFilmStorageTest {
         assertThat(films.get(3).getId())
                 .isNotNull()
                 .isEqualTo(filmsId.get(1));
-    }
-
-    @Test
-    public void putLike() {
-        assertThatThrownBy(() -> dbFilmStorage.findById(10L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
     }
 }

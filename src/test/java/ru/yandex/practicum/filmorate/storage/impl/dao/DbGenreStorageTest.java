@@ -5,14 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -47,7 +45,7 @@ class DbGenreStorageTest {
     @Test
     public void findGenresById() {
         var id = 3;
-        assertThat(dbGenreStorage.findById(id))
+        assertThat(dbGenreStorage.findById(id).get())
                 .isNotNull()
                 .isEqualTo(genres.get(id));
     }
@@ -55,7 +53,6 @@ class DbGenreStorageTest {
     @Test
     public void findGenresByIdNotFound() {
         var id = Integer.MAX_VALUE;
-        assertThatThrownBy(() -> dbGenreStorage.findById(id))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(dbGenreStorage.findById(id)).isEmpty();
     }
 }

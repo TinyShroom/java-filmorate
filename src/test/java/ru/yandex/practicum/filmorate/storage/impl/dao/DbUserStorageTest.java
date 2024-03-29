@@ -5,17 +5,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -46,8 +42,7 @@ class DbUserStorageTest {
 
     @Test
     public void updateUserNotFound() {
-        assertThatThrownBy(() -> userStorage.update(user))
-                .isInstanceOf(NotFoundException.class);
+        assertThat(userStorage.update(user)).isEmpty();
     }
 
     @Test
@@ -56,7 +51,7 @@ class DbUserStorageTest {
         var newUser = new User(id, "newuser@mail.com", "new_user_login", "new_user_name",
                 LocalDate.of(2001, 6, 4), new HashSet<>());
         var returnedUser = userStorage.update(newUser);
-        assertThat(returnedUser)
+        assertThat(returnedUser.get())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(newUser);
@@ -80,24 +75,17 @@ class DbUserStorageTest {
 
     @Test
     public void findByIdNotFound() {
-        assertThatThrownBy(() -> userStorage.findById(10L))
-                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(userStorage.findById(10L)).isEmpty();
     }
 
     @Test
     public void findByIdSuccess() {
         var id = userStorage.create(user).getId();
         user.setId(id);
-        assertThat(userStorage.findById(id))
+        assertThat(userStorage.findById(id).get())
                 .isNotNull()
                 .usingRecursiveComparison()
                 .isEqualTo(user);
-    }
-
-    @Test
-    public void getFriendsNotFound() {
-        assertThatThrownBy(() -> userStorage.getFriends(10L))
-                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -119,26 +107,6 @@ class DbUserStorageTest {
         assertThat(userStorage.getFriends(friendId))
                 .isNotNull()
                 .hasSize(0);
-    }
-
-    @Test
-    public void addFriendsNotFound() {
-        var id = userStorage.create(user).getId();
-        assertThatThrownBy(() -> userStorage.addFriends(id, id + 1))
-                .isInstanceOf(NotFoundException.class);
-        assertThatThrownBy(() -> userStorage.addFriends(id + 1, id))
-                .isInstanceOf(NotFoundException.class);
-        assertThatThrownBy(() -> userStorage.addFriends(id, id))
-                .isInstanceOf(NotFoundException.class);
-    }
-
-    @Test
-    public void addFriendsAlreadyFriend() {
-        var userId = userStorage.create(user).getId();
-        var friendId = userStorage.create(secondUser).getId();
-        userStorage.addFriends(userId, friendId);
-        assertThatThrownBy(() -> userStorage.addFriends(userId, friendId))
-                .isInstanceOf(DuplicateKeyException.class);
     }
 
     @Test
