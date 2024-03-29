@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.Map;
@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class DbMpaStorageTest {
 
-    private final JdbcTemplate jdbcTemplate;
-    private DbMpaStorage ratingDbMpaStorage;
+    private final NamedParameterJdbcOperations jdbcTemplate;
+    private DbMpaStorage dbMpaStorage;
 
     private static final Map<Integer, Mpa> ratings = Map.of(
             1, new Mpa(1, "G"),
@@ -31,12 +31,12 @@ class DbMpaStorageTest {
 
     @BeforeEach
     public void init() {
-        ratingDbMpaStorage = new DbMpaStorage(jdbcTemplate);
+        dbMpaStorage = new DbMpaStorage(jdbcTemplate);
     }
 
     @Test
     public void findGenresAll() {
-        assertThat(ratingDbMpaStorage.findAll())
+        assertThat(dbMpaStorage.findAll())
                 .isNotNull()
                 .hasSize(ratings.size())
                 .usingRecursiveComparison()
@@ -46,7 +46,7 @@ class DbMpaStorageTest {
     @Test
     public void findGenresById() {
         var id = 3;
-        assertThat(ratingDbMpaStorage.findById(id))
+        assertThat(dbMpaStorage.findById(id))
                 .isNotNull()
                 .isEqualTo(ratings.get(id));
     }
@@ -54,7 +54,7 @@ class DbMpaStorageTest {
     @Test
     public void findGenresByIdNotFound() {
         var id = Integer.MAX_VALUE;
-        assertThatThrownBy(() -> ratingDbMpaStorage.findById(id))
+        assertThatThrownBy(() -> dbMpaStorage.findById(id))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 

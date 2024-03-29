@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -23,7 +25,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User changeUser(User user) {
-        return userStorage.update(user);
+        return userStorage.update(user).orElseThrow(
+                () -> new NotFoundException(String.format("user with id %d not found", user.getId()))
+        );
     }
 
     @Override
@@ -36,7 +40,11 @@ public class UserServiceImpl implements UserService {
         if (id.equals(friendId)) {
             throw new ValidationException("PUT friends: id equals friendId");
         }
-        userStorage.addFriends(id, friendId);
+        try {
+            userStorage.addFriends(id, friendId);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("user or friend not found");
+        }
     }
 
     @Override
@@ -44,11 +52,20 @@ public class UserServiceImpl implements UserService {
         if (id.equals(friendId)) {
             throw new ValidationException("DELETE friends: id equals friendId");
         }
+        if (!isUserExist(id)) {
+            throw new NotFoundException(String.format("user with id == %d not found", id));
+        }
+        if (!isUserExist(friendId)) {
+            throw new NotFoundException(String.format("friend with id == %d not found", id));
+        }
         userStorage.deleteFriends(id, friendId);
     }
 
     @Override
     public List<User> getFriends(Long id) {
+        if (!isUserExist(id)) {
+            throw new NotFoundException(String.format("user with id == %d not found", id));
+        }
         return userStorage.getFriends(id);
     }
 
@@ -58,5 +75,9 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("firstId equals friendId");
         }
         return userStorage.getCommonFriends(id, secondId);
+    }
+
+    private boolean isUserExist(Long id) {
+        return userStorage.findById(id).isPresent();
     }
 }

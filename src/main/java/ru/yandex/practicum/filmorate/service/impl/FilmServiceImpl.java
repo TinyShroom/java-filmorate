@@ -24,11 +24,9 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film changeFilm(Film film) {
-        var oldFilm = filmStorage.findById(film.getId());
-        if (oldFilm == null) {
-            throw new NotFoundException(String.format("POST /films: film with id %d not found ", film.getId()));
-        }
-        return filmStorage.update(film);
+        return filmStorage.update(film).orElseThrow(
+                () -> new NotFoundException(String.format("film with id %d not found", film.getId()))
+        );
     }
 
     @Override
@@ -38,15 +36,16 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public Film getFilm(Long id) {
-        return filmStorage.findById(id);
+        return filmStorage.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("film with id %d not found", id))
+        );
     }
 
     @Override
     public void putLike(Long id, Long userId) {
-        var user = userStorage.findById(userId);
-        if (user == null) {
-            throw new NotFoundException(String.format("PUT like: user id %d not found", userId));
-        }
+        userStorage.findById(userId).orElseThrow(
+                () -> new NotFoundException(String.format("PUT like: user id %d not found", userId))
+        );
         filmStorage.putLike(id, userId);
     }
 

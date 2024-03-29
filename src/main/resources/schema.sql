@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     email varchar(256) NOT NULL,
     login varchar(256) NOT NULL,
     name varchar(256),
-    birthdate date
+    birthday date
 );
 
 CREATE TABLE IF NOT EXISTS friend (

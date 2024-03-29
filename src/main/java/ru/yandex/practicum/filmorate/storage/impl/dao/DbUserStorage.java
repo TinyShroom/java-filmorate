@@ -1,55 +1,63 @@
 package ru.yandex.practicum.filmorate.storage.impl.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository("userDbStorage")
 @RequiredArgsConstructor
 public class DbUserStorage implements UserStorage {
 
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcOperations jdbcTemplate;
 
     @Override
     public User create(User user) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("users")
-                .usingGeneratedKeyColumns("id");
-        user.setId(simpleJdbcInsert.executeAndReturnKey(userToMap(user)).longValue());
+        String sqlQuery = "INSERT INTO users(email, login, name, birthday) " +
+                "VALUES (:email, :login, :name, :birthday);";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("email", user.getEmail())
+                .addValue("login", user.getLogin())
+                .addValue("name", user.getName())
+                .addValue("birthday", user.getBirthday());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sqlQuery, namedParameters, keyHolder);
+        user.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return user;
     }
 
     @Override
-    public User update(User user) {
+    public Optional<User> update(User user) {
         String sqlUpdateQuery =
                 "UPDATE users " +
                 "SET " +
-                    "email = ?, " +
-                    "login = ?, " +
-                    "name = ?, " +
-                    "birthdate = ? " +
-                "WHERE id = ?";
+                    "email = :email, " +
+                    "login = :login, " +
+                    "name = :name, " +
+                    "birthday = :birthday " +
+                "WHERE id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("email", user.getEmail())
+                .addValue("login", user.getLogin())
+                .addValue("name", user.getName())
+                .addValue("birthday", user.getBirthday())
+                .addValue("id", user.getId());
 
-        var value = jdbcTemplate.update(sqlUpdateQuery, user.getEmail(), user.getLogin(), user.getName(),
-                user.getBirthday(), user.getId());
+        var value = jdbcTemplate.update(sqlUpdateQuery, namedParameters);
         if (value < 1) {
-            throw new NotFoundException(String.format("user with id %d not found", user.getId()));
+            return Optional.empty();
         }
-        String sqlReadQuery = "SELECT * FROM users WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlReadQuery, this::makeUser, user.getId());
+        return Optional.of(user);
     }
 
     @Override
@@ -57,71 +65,67 @@ public class DbUserStorage implements UserStorage {
         String sqlQuery =
                 "SELECT * " +
                 "FROM users;";
-        return jdbcTemplate.query(sqlQuery, this::makeUser);
+        return jdbcTemplate.query(sqlQuery, this::makeUsers);
     }
 
     @Override
-    public User findById(Long id) {
-        String sqlReadQuery = "SELECT * FROM users WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlReadQuery, this::makeUser, id);
+    public Optional<User> findById(Long id) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+        String sqlReadQuery = "SELECT * FROM users WHERE id = :id";
+        return jdbcTemplate.query(sqlReadQuery, namedParameters, this::makeUser);
     }
 
     @Override
-    public void addFriends(Long id, Long friendId) {
-        try {
-            jdbcTemplate.update("INSERT INTO friend(user_id, friend_id) values (?, ?)", id, friendId);
-        } catch (DuplicateKeyException e) {
-            throw new DuplicateKeyException("user already friend");
-        } catch (DataIntegrityViolationException e) {
-            throw new NotFoundException("user not found");
-        }
+    public void addFriends(Long userId, Long friendId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("friend_id", friendId);
+        jdbcTemplate.update("MERGE INTO friend(user_id, friend_id) values (:user_id, :friend_id)", namedParameters);
     }
 
     @Override
-    public void deleteFriends(Long id, Long friendId) {
-        if (!isUserExist(id)) {
-            throw new NotFoundException(String.format("user with id == %d not found", id));
-        }
-        if (!isUserExist(friendId)) {
-            throw new NotFoundException(String.format("friend with id == %d not found", id));
-        }
-        jdbcTemplate.update("DELETE FROM friend WHERE user_id = ? AND friend_id = ?", id, friendId);
+    public void deleteFriends(Long userId, Long friendId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("user_id", userId)
+                .addValue("friend_id", friendId);
+        jdbcTemplate.update("DELETE FROM friend WHERE user_id = :user_id AND friend_id = :friend_id", namedParameters);
     }
 
     @Override
     public List<User> getFriends(Long id) {
-        if (!isUserExist(id)) {
-            throw new NotFoundException(String.format("user with id == %d not found", id));
-        }
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
         String sqlQuery =
                         "SELECT u.id,\n" +
                         "       u.email,\n" +
                         "       u.login,\n" +
                         "       u.name,\n" +
-                        "       u.birthdate\n" +
+                        "       u.birthday\n" +
                         "FROM friend AS f\n" +
                         "JOIN users AS u ON f.friend_id = u.id\n" +
-                        "WHERE f.user_id = ?;";
-        return jdbcTemplate.query(sqlQuery, this::makeUser, id);
+                        "WHERE f.user_id = :id;";
+        return jdbcTemplate.query(sqlQuery, namedParameters, this::makeUsers);
     }
 
     @Override
     public List<User> getCommonFriends(Long id, Long secondId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("second_id", secondId);
         String sqlQuery =
                 "SELECT u.id,\n" +
                         "    u.email,\n" +
                         "    u.login,\n" +
                         "    u.name,\n" +
-                        "    u.birthdate\n" +
+                        "    u.birthday\n" +
                         "FROM friend AS f\n" +
                         "JOIN users AS u ON f.friend_id = u.id\n" +
-                        "WHERE f.user_id = ? AND f.friend_id IN (\n" +
+                        "WHERE f.user_id = :id AND f.friend_id IN (\n" +
                         "    SELECT us.id\n" +
                         "    FROM friend AS fs\n" +
                         "    JOIN users AS us ON fs.friend_id = us.id\n" +
-                        "    WHERE fs.user_id = ?\n" +
+                        "    WHERE fs.user_id = :second_id\n" +
                         ");";
-        return jdbcTemplate.query(sqlQuery, this::makeUser, id, secondId);
+        return jdbcTemplate.query(sqlQuery, namedParameters, this::makeUsers);
     }
 
     private Map<String, Object> userToMap(User user) {
@@ -129,23 +133,34 @@ public class DbUserStorage implements UserStorage {
         values.put("email", user.getEmail());
         values.put("login", user.getLogin());
         values.put("name", user.getName());
-        values.put("birthdate", user.getBirthday());
+        values.put("birthday", user.getBirthday());
         return values;
     }
 
-    private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
-        var birthdate = resultSet.getDate("birthdate");
-        var birthdateLocalDate = birthdate == null ? null : birthdate.toLocalDate();
+    private User makeUsers(ResultSet resultSet, int rowNum) throws SQLException {
+        var birthday = resultSet.getDate("birthday");
+        var birthdayLocalDate = birthday == null ? null : birthday.toLocalDate();
         return new User(resultSet.getLong("id"),
                 resultSet.getString("email"),
                 resultSet.getString("login"),
                 resultSet.getString("name"),
-                birthdateLocalDate,
+                birthdayLocalDate,
                 new HashSet<>()
         );
     }
 
-    private boolean isUserExist(Long id) {
-        return jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", id).next();
+    private Optional<User> makeUser(ResultSet resultSet) throws SQLException {
+        if (resultSet.next()) {
+            var birthday = resultSet.getDate("birthday");
+            var birthdayLocalDate = birthday == null ? null : birthday.toLocalDate();
+            return Optional.of(new User(resultSet.getLong("id"),
+                    resultSet.getString("email"),
+                    resultSet.getString("login"),
+                    resultSet.getString("name"),
+                    birthdayLocalDate,
+                    new HashSet<>()
+            ));
+        }
+        return Optional.empty();
     }
 }

@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
@@ -16,7 +17,9 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Genre getById(int id) {
-        return genreStorage.findById(id);
+        return genreStorage.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("genre with id == %d not found", id))
+        );
     }
 
     @Override
