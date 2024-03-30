@@ -77,24 +77,20 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public List<Film> findAll() {
         String sqlReadFilmQuery = "SELECT f.id,\n" +
-                "    f.name AS film_name,\n" +
-                "    f.description,\n" +
-                "    f.release_date,\n" +
-                "    f.duration,\n" +
-                "    f.rating_id,\n" +
-                "    r.name AS rating_name\n" +
+                "       f.name AS film_name,\n" +
+                "       f.description,\n" +
+                "       f.release_date,\n" +
+                "       f.duration,\n" +
+                "       f.rating_id,\n" +
+                "       r.name AS rating_name,\n" +
+                "       GROUP_CONCAT(fg.genre_id) AS film_genres_id,\n" +
+                "       GROUP_CONCAT(g.name) AS film_genres_name\n" +
                 "FROM film AS f\n" +
                 "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
-                "ORDER BY f.id;";
-        var films = jdbcTemplate.query(sqlReadFilmQuery, this::makeFilms);
-        String sqlReadGenreQuery = "SELECT f.film_id,\n" +
-                "    f.genre_id,\n" +
-                "    g.name\n" +
-                "FROM genre AS g\n" +
-                "JOIN film_genre AS f ON f.genre_id = g.id;";
-        var filmGenres = jdbcTemplate.query(sqlReadGenreQuery, this::makeFilmGenre);
-        addGenreInFilms(films, filmGenres);
-        return films;
+                "LEFT JOIN film_genre AS fg ON f.id = fg.film_id\n" +
+                "LEFT JOIN genre AS g ON fg.genre_id = g.id\n" +
+                "GROUP BY f.id;";
+        return jdbcTemplate.query(sqlReadFilmQuery, this::makeAllFilms);
     }
 
     @Override
@@ -199,6 +195,33 @@ public class DbFilmStorage implements FilmStorage {
                 rating,
                 new LinkedHashSet<>()
         );
+    }
+
+    private Film makeAllFilms(ResultSet resultSet, int rowNum) throws SQLException {
+        var releaseDate = resultSet.getDate("release_date");
+        var releaseLocalDate = releaseDate == null ? null : releaseDate.toLocalDate();
+        var rating = resultSet.getInt("rating_id") < 1 ? null :
+                new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name"));
+        var film = new Film(resultSet.getLong("id"),
+                resultSet.getString("film_name"),
+                resultSet.getString("description"),
+                releaseLocalDate,
+                resultSet.getInt("duration"),
+                rating,
+                new LinkedHashSet<>()
+        );
+        var stringOfGenresId = resultSet.getString("film_genres_id");
+        var stringOfGenresName = resultSet.getString("film_genres_name");
+        if (stringOfGenresId != null &&  stringOfGenresName != null) {
+            var genresId = Arrays.stream(resultSet.getString("film_genres_id").split(","))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+            var genresName = resultSet.getString("film_genres_name").split(",");
+            for (var i = 0; i < genresId.length && i < genresName.length; ++i) {
+                film.addGenre(new Genre(genresId[i], genresName[i]));
+            }
+        }
+        return film;
     }
 
     private Optional<Film> makeFilm(ResultSet resultSet) throws SQLException {
