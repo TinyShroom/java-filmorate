@@ -100,30 +100,22 @@ public class DbFilmStorage implements FilmStorage {
     @Override
     public Optional<Film> findById(Long id) {
         String sqlReadFilmQuery = "SELECT f.id,\n" +
-                "    f.name AS film_name,\n" +
-                "    f.description,\n" +
-                "    f.release_date,\n" +
-                "    f.duration,\n" +
-                "    f.rating_id,\n" +
-                "    r.name AS rating_name\n" +
+                "       f.name AS film_name,\n" +
+                "       f.description,\n" +
+                "       f.release_date,\n" +
+                "       f.duration,\n" +
+                "       f.rating_id,\n" +
+                "       r.name AS rating_name,\n" +
+                "       GROUP_CONCAT(fg.genre_id) AS film_genres_id,\n" +
+                "       GROUP_CONCAT(g.name) AS film_genres_name\n" +
                 "FROM film AS f\n" +
                 "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
-                "WHERE f.id = :id;";
+                "LEFT JOIN film_genre AS fg ON f.id = fg.film_id\n" +
+                "LEFT JOIN genre AS g ON fg.genre_id = g.id\n" +
+                "WHERE f.id = :id\n" +
+                "GROUP BY f.id;";
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
-        var film = jdbcTemplate.query(sqlReadFilmQuery, namedParameters, this::makeFilm);
-        if (film == null) {
-            return Optional.empty();
-        }
-        String sqlReadGenreQuery = "SELECT g.id,\n" +
-                "    g.name\n" +
-                "FROM genre AS g\n" +
-                "JOIN film_genre AS f ON f.genre_id = g.id\n" +
-                "WHERE f.film_id = :id;";
-        var genres = jdbcTemplate.query(sqlReadGenreQuery, namedParameters, this::makeGenre);
-        for (var genre: genres) {
-            film.addGenre(genre);
-        }
-        return Optional.of(film);
+        return jdbcTemplate.query(sqlReadFilmQuery, namedParameters, this::makeFilm);
     }
 
     @Override
@@ -209,13 +201,13 @@ public class DbFilmStorage implements FilmStorage {
         );
     }
 
-    private Film makeFilm(ResultSet resultSet) throws SQLException {
+    private Optional<Film> makeFilm(ResultSet resultSet) throws SQLException {
         if (resultSet.next()) {
             var releaseDate = resultSet.getDate("release_date");
             var releaseLocalDate = releaseDate == null ? null : releaseDate.toLocalDate();
             var rating = resultSet.getInt("rating_id") < 1 ? null :
                     new Mpa(resultSet.getInt("rating_id"), resultSet.getString("rating_name"));
-            return new Film(resultSet.getLong("id"),
+            var film = new Film(resultSet.getLong("id"),
                     resultSet.getString("film_name"),
                     resultSet.getString("description"),
                     releaseLocalDate,
@@ -223,8 +215,20 @@ public class DbFilmStorage implements FilmStorage {
                     rating,
                     new LinkedHashSet<>()
             );
+            var stringOfGenresId = resultSet.getString("film_genres_id");
+            var stringOfGenresName = resultSet.getString("film_genres_name");
+            if (stringOfGenresId != null &&  stringOfGenresName != null) {
+                var genresId = Arrays.stream(resultSet.getString("film_genres_id").split(","))
+                        .mapToInt(Integer::parseInt)
+                        .toArray();
+                var genresName = resultSet.getString("film_genres_name").split(",");
+                for (var i = 0; i < genresId.length && i < genresName.length; ++i) {
+                    film.addGenre(new Genre(genresId[i], genresName[i]));
+                }
+            }
+            return Optional.of(film);
         }
-        return null;
+        return Optional.empty();
     }
 
     private Genre makeGenre(ResultSet resultSet, int rowNum) throws SQLException {
