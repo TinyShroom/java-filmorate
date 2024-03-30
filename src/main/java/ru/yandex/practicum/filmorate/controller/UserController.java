@@ -12,12 +12,13 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User add(@Valid @RequestBody User user) {
         log.info("POST /users: {}", user.toString());
@@ -26,7 +27,7 @@ public class UserController {
         return result;
     }
 
-    @PutMapping("/users")
+    @PutMapping
     public User change(@Valid @RequestBody User user) {
         log.info("PUT /users: {}", user.toString());
         var result = userService.changeUser(user);
@@ -34,7 +35,7 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAll() {
         log.info("GET /users: all");
         var result = userService.getUsers();
@@ -42,14 +43,14 @@ public class UserController {
         return result;
     }
 
-    @PutMapping("/users/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public void addFriends(@PathVariable Long id, @PathVariable Long friendId) {
         log.info("PUT /friends: {}, {}", id, friendId);
         userService.addFriends(id, friendId);
         log.info("completion PUT /friends: success");
     }
 
-    @DeleteMapping("/users/{id}/friends/{friendId}")
+    @DeleteMapping("/{id}/friends/{friendId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFriends(@PathVariable Long id, @PathVariable Long friendId) {
         log.info("DELETE /friends: {}, {}", id, friendId);
@@ -57,7 +58,7 @@ public class UserController {
         log.info("completion DELETE /friends: success");
     }
 
-    @GetMapping("/users/{id}/friends")
+    @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable Long id) {
         log.info("GET /friends: {}", id);
         var result = userService.getFriends(id);
@@ -65,11 +66,11 @@ public class UserController {
         return result;
     }
 
-    @GetMapping("/users/{id}/friends/common/{secondId}")
+    @GetMapping("/{id}/friends/common/{secondId}")
     public List<User> getCommonFriends(@PathVariable Long id, @PathVariable Long secondId) {
         log.info("GET /friends/common: {}, {}", id, secondId);
         var result = userService.getCommonFriends(id, secondId);
-        log.info("GET /friends/common: size {}", result.size());
+        log.info("completion GET /friends/common: size {}", result.size());
         return result;
     }
 }
