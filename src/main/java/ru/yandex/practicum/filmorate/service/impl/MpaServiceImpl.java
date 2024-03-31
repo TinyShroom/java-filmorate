@@ -17,8 +17,8 @@ public class MpaServiceImpl implements MpaService {
 
     @Override
     public Mpa getById(int id) {
-        return mpaStorage.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("mpa with id == %d not found", id))
+        return mpaStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("mpa with id == %d not found", id))
         );
     }
 

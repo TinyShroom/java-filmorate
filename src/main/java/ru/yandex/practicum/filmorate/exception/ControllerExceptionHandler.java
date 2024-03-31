@@ -68,8 +68,8 @@ public class ControllerExceptionHandler {
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler
-    public ErrorDto exceptionHandler(RuntimeException e) {
-        log.info("RuntimeException: " + e.getMessage());
+    public ErrorDto exceptionHandler(Exception e) {
+        log.error("Exception: " + e.getMessage(), e);
         return new ErrorDto(e.getMessage());
     }
 }
