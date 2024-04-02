@@ -83,8 +83,8 @@ public class DbFilmStorage implements FilmStorage {
                 "       f.duration,\n" +
                 "       f.rating_id,\n" +
                 "       r.name AS rating_name,\n" +
-                "       GROUP_CONCAT(fg.genre_id) AS film_genres_id,\n" +
-                "       GROUP_CONCAT(g.name) AS film_genres_name\n" +
+                "       ARRAY_AGG(fg.genre_id) AS film_genres_id,\n" +
+                "       ARRAY_AGG(g.name) AS film_genres_name\n" +
                 "FROM film AS f\n" +
                 "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "LEFT JOIN film_genre AS fg ON f.id = fg.film_id\n" +
@@ -102,8 +102,8 @@ public class DbFilmStorage implements FilmStorage {
                 "       f.duration,\n" +
                 "       f.rating_id,\n" +
                 "       r.name AS rating_name,\n" +
-                "       GROUP_CONCAT(fg.genre_id) AS film_genres_id,\n" +
-                "       GROUP_CONCAT(g.name) AS film_genres_name\n" +
+                "       ARRAY_AGG(fg.genre_id) AS film_genres_id,\n" +
+                "       ARRAY_AGG(g.name) AS film_genres_name\n" +
                 "FROM film AS f\n" +
                 "LEFT JOIN rating AS r ON f.rating_id = r.id\n" +
                 "LEFT JOIN film_genre AS fg ON f.id = fg.film_id\n" +
@@ -210,13 +210,17 @@ public class DbFilmStorage implements FilmStorage {
                 rating,
                 new LinkedHashSet<>()
         );
-        var stringOfGenresId = resultSet.getString("film_genres_id");
-        var stringOfGenresName = resultSet.getString("film_genres_name");
-        if (stringOfGenresId != null &&  stringOfGenresName != null) {
-            var genresId = Arrays.stream(resultSet.getString("film_genres_id").split(","))
-                    .mapToInt(Integer::parseInt)
+        var filmGenresId = resultSet.getArray("film_genres_id");
+        var filmGenresName = resultSet.getArray("film_genres_name");
+        if (filmGenresId != null &&  filmGenresName != null) {
+            var genresId = Arrays.stream((Object[]) filmGenresId.getArray())
+                    .filter(Objects::nonNull)
+                    .mapToInt((t) -> (Integer) t)
                     .toArray();
-            var genresName = resultSet.getString("film_genres_name").split(",");
+            var genresName = Arrays.stream((Object[]) filmGenresName.getArray())
+                    .filter(Objects::nonNull)
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
             for (var i = 0; i < genresId.length && i < genresName.length; ++i) {
                 film.addGenre(new Genre(genresId[i], genresName[i]));
             }
@@ -238,13 +242,18 @@ public class DbFilmStorage implements FilmStorage {
                     rating,
                     new LinkedHashSet<>()
             );
-            var stringOfGenresId = resultSet.getString("film_genres_id");
-            var stringOfGenresName = resultSet.getString("film_genres_name");
-            if (stringOfGenresId != null &&  stringOfGenresName != null) {
-                var genresId = Arrays.stream(resultSet.getString("film_genres_id").split(","))
-                        .mapToInt(Integer::parseInt)
+
+            var filmGenresId = resultSet.getArray("film_genres_id");
+            var filmGenresName = resultSet.getArray("film_genres_name");
+            if (filmGenresId != null &&  filmGenresName != null) {
+                var genresId = Arrays.stream((Object[]) filmGenresId.getArray())
+                        .filter(Objects::nonNull)
+                        .mapToInt((t) -> (Integer) t)
                         .toArray();
-                var genresName = resultSet.getString("film_genres_name").split(",");
+                var genresName = Arrays.stream((Object[]) filmGenresName.getArray())
+                        .filter(Objects::nonNull)
+                        .map(String::valueOf)
+                        .toArray(String[]::new);
                 for (var i = 0; i < genresId.length && i < genresName.length; ++i) {
                     film.addGenre(new Genre(genresId[i], genresName[i]));
                 }
