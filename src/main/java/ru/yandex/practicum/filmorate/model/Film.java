@@ -1,40 +1,41 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Setter;
+import ru.yandex.practicum.filmorate.utils.ReleaseDateConstraint;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * Film.
  */
 @Data
+@AllArgsConstructor
 public class Film {
     private long id;
     @NotBlank
     private String name;
     @Size(max = 200)
     private String description;
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
     @Min(1)
     private int duration;
-    private RatingMpa ratingMpa;
+    private Mpa mpa;
     @Setter(AccessLevel.NONE)
-    @JsonIgnore
-    private final Set<Long> likes;
-    @Setter(AccessLevel.NONE)
-    private final Set<Genre> genre;
+    private final LinkedHashSet<Genre> genres;
 
     public Film() {
-        this.likes = new HashSet<>();
-        this.genre = new HashSet<>();
+        this.genres = new LinkedHashSet<>();
     }
 
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
 }
