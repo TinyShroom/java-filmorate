@@ -15,6 +15,8 @@ public interface UserStorage {
 
     Optional<User> findById(Long id);
 
+    void delete(Long id);
+
     void addFriends(Long id, Long friendId);
 
     void deleteFriends(Long id, Long friendId);
@@ -22,4 +24,6 @@ public interface UserStorage {
     List<User> getFriends(Long id);
 
     List<User> getCommonFriends(Long id, Long otherId);
+
+    Long findUserWithSimilarLikes(Long userId);
 }

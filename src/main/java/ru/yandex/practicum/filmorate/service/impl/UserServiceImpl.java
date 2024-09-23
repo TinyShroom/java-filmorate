@@ -4,12 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,6 +22,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
 
     @Override
     public User addUser(User user) {
@@ -36,6 +42,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getById(Long id) {
+        return userStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("user with id == %d not found", id)));
+    }
+
+    @Override
+    public void delete(Long id) {
+        userStorage.delete(id);
+    }
+
+    @Override
     public void addFriends(Long id, Long friendId) {
         if (id.equals(friendId)) {
             throw new ValidationException("PUT friends: id equals friendId");
@@ -45,6 +62,13 @@ public class UserServiceImpl implements UserService {
         } catch (DataIntegrityViolationException e) {
             throw new NotFoundException("user or friend not found");
         }
+        feedStorage.recordEvent(Feed.builder()
+                .timestamp(new Date().getTime())
+                .userId(id)
+                .eventType(EventType.FRIEND)
+                .operation(Operation.ADD)
+                .entityId(friendId)
+                .build());
     }
 
     @Override
@@ -59,6 +83,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException(String.format("friend with id == %d not found", id));
         }
         userStorage.deleteFriends(id, friendId);
+        feedStorage.recordEvent(Feed.builder()
+                .timestamp(new Date().getTime())
+                .userId(id)
+                .eventType(EventType.FRIEND)
+                .operation(Operation.REMOVE)
+                .entityId(friendId)
+                .build());
     }
 
     @Override

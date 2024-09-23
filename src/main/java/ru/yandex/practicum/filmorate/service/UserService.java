@@ -12,6 +12,10 @@ public interface UserService {
 
     List<User> getUsers();
 
+    User getById(Long id);
+
+    void delete(Long id);
+
     void addFriends(Long id, Long friendId);
 
     void deleteFriends(Long id, Long friendId);
@@ -19,4 +23,5 @@ public interface UserService {
     List<User> getFriends(Long id);
 
     List<User> getCommonFriends(Long id, Long secondId);
+
 }

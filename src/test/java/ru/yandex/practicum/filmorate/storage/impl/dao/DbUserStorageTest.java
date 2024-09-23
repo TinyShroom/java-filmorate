@@ -6,15 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class DbUserStorageTest {
 
     private final NamedParameterJdbcOperations jdbcTemplate;
@@ -111,32 +115,34 @@ class DbUserStorageTest {
 
     @Test
     public void getCommonFriendsEmpty() {
-        var userId = userStorage.create(user).getId();
-        var secondId = userStorage.create(secondUser).getId();
-        var thirdUser  = new User(3, "thirduser@mail.com", "user_login3", "user_name",
-                LocalDate.of(2002, 7, 5), new HashSet<>());
-        var thirdId = userStorage.create(thirdUser).getId();
-        assertThat(userStorage.getCommonFriends(userId, secondId))
+        var usersId = createUsers();
+        assertThat(userStorage.getCommonFriends(usersId.get(0), usersId.get(1)))
                 .isNotNull()
                 .hasSize(0);
-        userStorage.addFriends(userId, secondId);
-        userStorage.addFriends(secondId, thirdId);
-        assertThat(userStorage.getCommonFriends(userId, secondId))
+        userStorage.addFriends(usersId.get(0), usersId.get(1));
+        userStorage.addFriends(usersId.get(1), usersId.get(2));
+        assertThat(userStorage.getCommonFriends(usersId.get(0), usersId.get(1)))
                 .isNotNull()
                 .hasSize(0);
     }
 
     @Test
     public void getCommonFriendsNotEmpty() {
-        var userId = userStorage.create(user).getId();
-        var secondId = userStorage.create(secondUser).getId();
-        var thirdUser  = new User(3, "thirduser@mail.com", "user_login3", "user_name",
-                LocalDate.of(2002, 7, 5), new HashSet<>());
-        var thirdId = userStorage.create(thirdUser).getId();
-        userStorage.addFriends(userId, thirdId);
-        userStorage.addFriends(secondId, thirdId);
-        assertThat(userStorage.getCommonFriends(userId, secondId))
+        var usersId = createUsers();
+        userStorage.addFriends(usersId.get(0), usersId.get(2));
+        userStorage.addFriends(usersId.get(1), usersId.get(2));
+        assertThat(userStorage.getCommonFriends(usersId.get(0), usersId.get(1)))
                 .isNotNull()
                 .hasSize(1);
+    }
+
+    private List<Long> createUsers() {
+        List<Long> usersId = new ArrayList<>();
+        usersId.add(userStorage.create(user).getId());
+        usersId.add(userStorage.create(secondUser).getId());
+        var thirdUser  = new User(3, "thirduser@mail.com", "user_login3", "user_name",
+                LocalDate.of(2002, 7, 5), new HashSet<>());
+        usersId.add(userStorage.create(thirdUser).getId());
+        return usersId;
     }
 }

@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,6 +29,8 @@ class FilmControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private FilmService filmService;
+
+    private static final int MIN_YEAR = 1895;
 
     private static ObjectMapper mapper;
 
@@ -248,5 +253,96 @@ class FilmControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getDirectorFailSortBy() throws Exception {
+        var mockRequest = MockMvcRequestBuilders.get("/films/director/1?sortBy=asdfgh")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getCommonOk() throws Exception {
+        var mockRequest = MockMvcRequestBuilders.get("/films/common?userId=1&friendId=2")
+                .contentType(MediaType.APPLICATION_JSON);
+        when(filmService.getCommon(1, 2)).thenReturn(new ArrayList<>());
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCommonFail() throws Exception {
+        var mockRequest = MockMvcRequestBuilders.get("/films/common?userId=1")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+        mockRequest = MockMvcRequestBuilders.get("/films/common?friendId=2")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getPopularSuccess() throws Exception {
+        var mockRequest = MockMvcRequestBuilders
+                .get(String.format("/films/popular?count=1&genreId=1&year=%d", MIN_YEAR))
+                .contentType(MediaType.APPLICATION_JSON);
+        when(filmService.getPopular(1, 1, MIN_YEAR)).thenReturn(List.of());
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
+
+        mockRequest = MockMvcRequestBuilders.get("/films/popular?count=1")
+                .contentType(MediaType.APPLICATION_JSON);
+        when(filmService.getPopular(1, null, null)).thenReturn(List.of());
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
+
+        mockRequest = MockMvcRequestBuilders.get("/films/popular?genreId=1")
+                .contentType(MediaType.APPLICATION_JSON);
+        when(filmService.getPopular(10, 1, null)).thenReturn(List.of());
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
+
+        mockRequest = MockMvcRequestBuilders
+                .get(String.format("/films/popular?year=%d", MIN_YEAR))
+                .contentType(MediaType.APPLICATION_JSON);
+        when(filmService.getPopular(10, null, MIN_YEAR)).thenReturn(List.of());
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getPopularFailCount() throws Exception {
+        var mockRequest = MockMvcRequestBuilders.get("/films/popular?count=0")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+        mockRequest = MockMvcRequestBuilders.get("/films/popular?count=-1")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getPopularFailGenreId() throws Exception {
+        var mockRequest = MockMvcRequestBuilders.get("/films/popular?genreId=0")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+        mockRequest = MockMvcRequestBuilders.get("/films/popular?genreId=-1")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getPopularFailDate() throws Exception {
+        var mockRequest = MockMvcRequestBuilders
+                .get(String.format("/films/popular?year=%d", MIN_YEAR - 1))
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isBadRequest());
     }
 }

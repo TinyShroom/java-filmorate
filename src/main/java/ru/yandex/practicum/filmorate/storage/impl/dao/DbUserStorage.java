@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.impl.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,7 +13,12 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository("userDbStorage")
 @RequiredArgsConstructor
@@ -73,6 +79,12 @@ public class DbUserStorage implements UserStorage {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
         String sqlReadQuery = "SELECT * FROM users WHERE id = :id";
         return jdbcTemplate.query(sqlReadQuery, namedParameters, this::makeUser);
+    }
+
+    @Override
+    public void delete(Long id) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", id);
+        jdbcTemplate.update("DELETE FROM users WHERE id = :id", namedParameters);
     }
 
     @Override
@@ -162,5 +174,21 @@ public class DbUserStorage implements UserStorage {
             ));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Long findUserWithSimilarLikes(Long userId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("user_id", userId);
+        String sqlQuery = "SELECT fl2.user_id " +
+                "FROM FILM_LIKES AS fl1, FILM_LIKES AS fl2 " +
+                "WHERE fl1.film_id = fl2.film_id " +
+                "AND fl1.user_id = :user_id AND fl1.user_id <> fl2.user_id " +
+                "GROUP BY fl1.user_id, fl2.user_id " +
+                "ORDER BY count(*) desc limit 1";
+        try {
+            return jdbcTemplate.queryForObject(sqlQuery, namedParameters, Long.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
